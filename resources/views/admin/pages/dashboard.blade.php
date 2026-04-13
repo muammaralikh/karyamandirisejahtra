@@ -450,8 +450,19 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
-
+            <!-- Grafik Penjualan Bulanan -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Grafik Laporan Penjualan Bulanan</h3>
+                            <span>Data 6 bulan terakhir</span>
+                        </div>
+                        <canvas id="monthlySalesChart" style="min-height: 250px;"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -499,4 +510,52 @@
         // In real application, you would fetch new data from API here
         console.log('Refreshing dashboard data...');
     }, 300000);
+
+    // Monthly sales chart
+    const monthlySalesLabels = @json($chartLabels);
+    const monthlySalesData = @json($chartData);
+
+    const monthlySalesCtx = document.getElementById('monthlySalesChart').getContext('2d');
+    new Chart(monthlySalesCtx, {
+        type: 'line',
+        data: {
+            labels: monthlySalesLabels,
+            datasets: [{
+                label: 'Pendapatan (Rp)',
+                data: monthlySalesData,
+                borderColor: '#4361ee',
+                backgroundColor: 'rgba(67, 97, 238, 0.15)',
+                pointBackgroundColor: '#4361ee',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: '#4361ee',
+                fill: true,
+                tension: 0.35,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'Rp ' + value.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            }
+        }
+    });
 </script>

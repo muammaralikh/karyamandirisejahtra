@@ -82,7 +82,7 @@ class PesananController extends Controller
         $callback = function () {
             $file = fopen('php://output', 'w');
             
-            // 1. Tambahkan BOM (Byte Order Mark) agar Excel otomatis membaca encoding UTF-8 dengan benar
+            // 1. Tambahkan BOM (Byte Orderaaark) agar Excelzzzz atis membaca encoding UTF-8 dengan benar
             fputs($file, "\xEF\xBB\xBF");
 
             // 2. Gunakan separator titik koma (;) yang lebih ramah untuk Excel dengan region Indonesia
