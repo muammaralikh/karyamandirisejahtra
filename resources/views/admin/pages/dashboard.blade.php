@@ -3,13 +3,13 @@
 <style>
     /* Custom Styles for Dashboard */
     :root {
-        --primary-color: #4361ee;
-        --secondary-color: #3a0ca3;
-        --success-color: #4cc9f0;
-        --warning-color: #f72585;
-        --info-color: #7209b7;
-        --light-color: #f8f9fa;
-        --dark-color: #212529;
+        --primary-color: #2d6a4f;
+        --secondary-color: #52b788;
+        --success-color: #95d5b2;
+        --warning-color: #8ac926;
+        --info-color: #40916c;
+        --light-color: #f8faf7;
+        --dark-color: #1b4332;
     }
 
     .dashboard-card {
@@ -98,28 +98,121 @@
     }
 
     .chart-container {
-        background: white;
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        position: relative;
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 18px 40px rgba(45, 106, 79, 0.08);
         margin-bottom: 20px;
-        height: 100%;
+        overflow: hidden;
+        min-height: 8cm;
+        width: 100%;
+    }
+
+    .chart-container::before {
+        content: '';
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: radial-gradient(circle at center, rgba(82, 183, 136, 0.28), transparent 65%);
+        z-index: 0;
+    }
+
+    .chart-canvas {
+        width: 100%;
+        height: 8cm;
+        max-width: 100%;
+        max-height: 8cm;
+        display: block;
+        position: relative;
+        z-index: 1;
     }
 
     .chart-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #eef2f7;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(45, 106, 79, 0.12);
+        position: relative;
+        z-index: 1;
     }
 
     .chart-header h3 {
-        font-size: 1.2rem;
-        font-weight: 600;
+        font-size: 1.3rem;
+        font-weight: 700;
         color: var(--dark-color);
         margin: 0;
+    }
+
+    .chart-header span {
+        color: #4f6b53;
+        opacity: 0.85;
+        font-size: 0.95rem;
+        max-width: 320px;
+        text-align: right;
+    }
+
+    .chart-notes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1.25rem;
+    }
+
+    .chart-note-card {
+        flex: 1 1 220px;
+        background: #f5fbf6;
+        padding: 18px 20px;
+        border-radius: 18px;
+        border: 1px solid rgba(45, 106, 79, 0.12);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .chart-note-card strong {
+        display: block;
+        margin-bottom: 8px;
+        color: #2d6a4f;
+        font-size: 0.95rem;
+    }
+
+    .chart-note-card .note-value {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #0f5132;
+    }
+
+    .note-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        font-size: 0.92rem;
+        color: #406a50;
+    }
+
+    .note-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(45, 106, 79, 0.12);
+        color: #2d6a4f;
+        font-weight: 700;
+    }
+
+    .note-badge.negative {
+        background: rgba(208, 0, 0, 0.12);
+        color: #d00000;
     }
 
     .recent-activity {
@@ -426,7 +519,7 @@
                     <div class="dashboard-card">
                         <div class="stat-card card-gradient-3">
                             <div class="inner">
-                                <h3 id="totalUser">{{ $totalPesanan }}</h3>
+                                <h3 id="totalPesanan">{{ $totalPesanan }}</h3>
                                 <p>Total Order</p>
                             </div>
                             <div class="icon">
@@ -435,7 +528,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
+            </div>
+
+            <div class="row align-items-start">
+                <div class="col-xl-3 col-lg-4 col-md-12 mb-4">
                     <div class="dashboard-card">
                         <div class="stat-card card-gradient-4">
                             <div class="inner">
@@ -450,17 +546,38 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Grafik Penjualan Bulanan -->
-            <div class="row">
-                <div class="col-lg-12">
+                <div class="col-xl-9 col-lg-8 col-md-12">
                     <div class="chart-container">
                         <div class="chart-header">
-                            <h3>Grafik Laporan Penjualan Bulanan</h3>
-                            <span>Data 6 bulan terakhir</span>
+                            <div>
+                                <h3>Grafik Pendapatan Bulanan</h3>
+                                <p style="margin:0; color:#4f6b53; opacity:0.85; font-size:0.95rem;">Tiap titik menunjukkan pendapatan untuk bulan tersebut. Arah garis menunjukkan naik/turun dibanding bulan sebelumnya.</p>
+                            </div>
+                            <span>Data 12 bulan terakhir</span>
                         </div>
-                        <canvas id="monthlySalesChart" style="min-height: 250px;"></canvas>
+                        <canvas id="monthlySalesChart" class="chart-canvas"></canvas>
+                        <div class="chart-notes">
+                            <div class="chart-note-card">
+                                <div class="note-meta">
+                                    <span class="note-badge {{ $currentMonthRevenue < $previousMonthRevenue ? 'negative' : '' }}">{{ $currentMonthRevenue < $previousMonthRevenue ? '↘' : '↗' }}</span>
+                                    <span>Performa terbaru</span>
+                                </div>
+                                <strong>Pendapatan Bulan Ini</strong>
+                                <div class="note-value">
+                                    Rp {{ number_format($currentMonthRevenue, 0, ',', '.') }}
+                                </div>
+                            </div>
+                            <div class="chart-note-card">
+                                <div class="note-meta">
+                                    <span class="note-badge">•</span>
+                                    <span>Referensi sebelumnya</span>
+                                </div>
+                                <strong>Pendapatan Bulan Lalu</strong>
+                                <div class="note-value">
+                                    Rp {{ number_format($previousMonthRevenue, 0, ',', '.') }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -514,8 +631,16 @@
     // Monthly sales chart
     const monthlySalesLabels = @json($chartLabels);
     const monthlySalesData = @json($chartData);
+    const monthlySalesTrend = monthlySalesData.map((value, index, array) => {
+        if (index === 0) return 'flat';
+        return value >= array[index - 1] ? 'up' : 'down';
+    });
 
     const monthlySalesCtx = document.getElementById('monthlySalesChart').getContext('2d');
+    const gradient = monthlySalesCtx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(45, 106, 79, 0.45)');
+    gradient.addColorStop(1, 'rgba(45, 106, 79, 0.05)');
+
     new Chart(monthlySalesCtx, {
         type: 'line',
         data: {
@@ -523,24 +648,54 @@
             datasets: [{
                 label: 'Pendapatan (Rp)',
                 data: monthlySalesData,
-                borderColor: '#4361ee',
-                backgroundColor: 'rgba(67, 97, 238, 0.15)',
-                pointBackgroundColor: '#4361ee',
+                segment: {
+                    borderColor: ctx => ctx.p1 && ctx.p0 && ctx.p1.parsed.y >= ctx.p0.parsed.y ? '#2d6a4f' : '#d00000'
+                },
+                borderColor: '#2d6a4f',
+                backgroundColor: gradient,
+                pointBackgroundColor: monthlySalesTrend.map(status => status === 'down' ? '#d00000' : '#2d6a4f'),
                 pointBorderColor: '#fff',
                 pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: '#4361ee',
+                pointHoverBorderColor: '#2d6a4f',
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                pointStyle: 'circle',
                 fill: true,
-                tension: 0.35,
-                borderWidth: 2
+                tension: 0.4,
+                borderWidth: 3
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            layout: {
+                padding: {
+                    top: 10,
+                    bottom: 10,
+                }
+            },
             scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: '#2d6a4f'
+                    }
+                },
                 y: {
                     beginAtZero: true,
+                    grid: {
+                        color: 'rgba(45, 106, 79, 0.08)',
+                        borderDash: [4, 4]
+                    },
                     ticks: {
+                        stepSize: 10000,
+                        color: '#2d6a4f',
                         callback: function(value) {
                             return 'Rp ' + value.toLocaleString('id-ID');
                         }
@@ -548,10 +703,30 @@
                 }
             },
             plugins: {
+                legend: {
+                    display: false
+                },
                 tooltip: {
+                    backgroundColor: '#fff',
+                    titleColor: '#212529',
+                    bodyColor: '#212529',
+                    borderColor: '#dee2e6',
+                    borderWidth: 1,
+                    borderRadius: 12,
+                    boxPadding: 10,
+                    bodySpacing: 6,
+                    displayColors: false,
                     callbacks: {
                         label: function(context) {
                             return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                        },
+                        afterLabel: function(context) {
+                            if (context.dataIndex === 0) return '';
+                            const previous = context.dataset.data[context.dataIndex - 1];
+                            const current = context.parsed.y;
+                            const change = current - previous;
+                            const prefix = change >= 0 ? 'Naik: ' : 'Turun: ';
+                            return prefix + 'Rp ' + Math.abs(change).toLocaleString('id-ID');
                         }
                     }
                 }

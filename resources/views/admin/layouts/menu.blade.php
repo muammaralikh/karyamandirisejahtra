@@ -1,5 +1,56 @@
 
  <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color: #499159;">
+      <style>
+        .main-sidebar .nav-sidebar .nav-link {
+          padding: 16px 18px;
+          min-height: 60px;
+          font-size: 1.08rem;
+        }
+        .main-sidebar .nav-sidebar .nav-icon {
+          font-size: 1.3rem;
+          width: 30px;
+        }
+        .main-sidebar .nav-sidebar .nav-link p {
+          margin: 0;
+          font-weight: 500;
+          letter-spacing: 0.02em;
+        }
+        .main-sidebar .nav-sidebar .nav-link.active {
+          background-color: rgba(255, 255, 255, 0.12);
+          border-radius: 12px;
+        }
+        .sidebar {
+          position: relative;
+        }
+        .sidebar-logout {
+          position: absolute;
+          bottom: 10px;
+          left: 0;
+          width: 100%;
+          padding: 0 12px 12px;
+        }
+        .sidebar-logout-link {
+          display: flex;
+          align-items: center;
+          color: #fff;
+          padding: 14px 18px;
+          border-radius: 12px;
+          background: transparent;
+          transition: background 0.2s ease;
+          width: 100%;
+          box-sizing: border-box;
+        }
+        .sidebar-logout-link:hover {
+          background: rgba(255,255,255,0.08);
+          text-decoration: none;
+        }
+        .sidebar-logout-link .nav-icon {
+          margin-right: 10px;
+        }
+        .sidebar-logout-link p {
+          margin: 0;
+        }
+      </style>
       <!-- Brand Logo -->
       <a href="" class="brand-link text-center">
         <img src="{{ asset('logo/logo.kms.jpg.jpeg') }}" alt="Logo" style="height: 50px; width: auto;">
@@ -51,6 +102,15 @@
             </li>
 
           </ul>
+          <div class="sidebar-logout py-3 px-2">
+            <a href="#" onclick="event.preventDefault(); document.getElementById('sidebar-logout-form').submit();" class="nav-link sidebar-logout-link">
+              <i class="nav-icon fas fa-sign-out-alt text-white"></i>
+              <p class="text-white mb-0">Logout</p>
+            </a>
+            <form id="sidebar-logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+              @csrf
+            </form>
+          </div>
         </nav>
         <!-- /.sidebar-menu -->
       </div>
