@@ -227,6 +227,10 @@ class Order extends Model
     // Method untuk cancel order
     public function cancel($reason = null)
     {
+        if ($this->status !== 'cancelled') {
+            $this->releaseStock();
+        }
+
         $this->status = 'cancelled';
         $this->cancelled_at = now();
         $this->cancellation_reason = $reason;
@@ -261,5 +265,39 @@ class Order extends Model
         ];
         
         return $methods[$this->payment_method] ?? $this->payment_method;
+    }
+
+    public function reserveStock()
+    {
+        $this->loadMissing('items.product');
+
+        foreach ($this->items as $item) {
+            $product = $item->product;
+
+            if (!$product) {
+                throw new \RuntimeException("Produk untuk item {$item->id} tidak ditemukan.");
+            }
+
+            if ($product->stok < $item->qty) {
+                throw new \RuntimeException("Stok {$product->nama} tidak mencukupi.");
+            }
+
+            $product->decrement('stok', $item->qty);
+        }
+
+        return $this;
+    }
+
+    public function releaseStock()
+    {
+        $this->loadMissing('items.product');
+
+        foreach ($this->items as $item) {
+            if ($item->product) {
+                $item->product->increment('stok', $item->qty);
+            }
+        }
+
+        return $this;
     }
 }

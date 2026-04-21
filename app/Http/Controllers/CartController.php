@@ -29,13 +29,22 @@ class CartController extends Controller
 
         $user = Auth::user();
         $product = Produk::findOrFail($request->produk_id);
+
+        if (($product->stok ?? 0) < 1) {
+            return redirect()->back()->with('error', 'Stok produk sedang habis.');
+        }
+
         $existingCart = Cart::where('user_id', $user->id)
             ->where('produk_id', $product->id)
             ->first();
 
         if ($existingCart) {
+            if ($existingCart->qty >= $product->stok) {
+                return redirect()->back()->with('error', 'Jumlah produk di keranjang sudah mencapai stok yang tersedia.');
+            }
+
             $existingCart->update([
-                'qty' => $existingCart->qty + '1'
+                'qty' => $existingCart->qty + 1
             ]);
 
             $message = 'Produk berhasil ditambahkan ke keranjang!';
@@ -63,6 +72,14 @@ class CartController extends Controller
                 ->where('user_id', Auth::id())
                 ->where('id', $id)
                 ->firstOrFail();
+
+            if ($request->qty > ($cart->produk->stok ?? 0)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Qty melebihi stok yang tersedia.'
+                ], 422);
+            }
+
             $cart->update([
                 'qty' => $request->qty
             ]);

@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\GeneratesUniqueUsername;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+
 class UserController extends Controller
 {
+    use GeneratesUniqueUsername;
+
     private function setActive($page)
     {
         return [
@@ -22,7 +26,8 @@ class UserController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('username', 'like', "%{$search}%");
+                    ->orWhere('username', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
         if ($request->has('role') && $request->role) {
@@ -44,14 +49,13 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'username' => [
-                'required',
-                'string'
-            ],
-            'role' => 'required|in:admin,staff,user'
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'username' => 'nullable|string|max:255|unique:users,username,' . $user->id,
+            'role' => 'required|in:admin,user',
         ]);
 
         try {
+            $validated['username'] = $validated['username'] ?? $this->generateUniqueUsernameFromEmail($validated['email'], $user->id);
 
             $user->update($validated);
             return redirect()->route('daftar-user.index')
@@ -83,18 +87,20 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users,username',
-            'password' => 'required|string',
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'username' => 'nullable|string|max:255|unique:users,username',
+            'password' => 'required|string|min:8|confirmed',
             'role' => 'required|string',
         ]);
 
         User::create([
-            'name'     => $request->name,
-            'username' => $request->username,
+            'name' => $request->name,
+            'email' => $request->email,
+            'username' => $request->username ?: $this->generateUniqueUsernameFromEmail($request->email),
             'password' => Hash::make($request->password),
-            'role'     => $request->role,
-            'status'   => 'Aktif',
+            'role' => $request->role,
+            'status' => 'Aktif',
         ]);
 
         return back()->with('success', 'Akun berhasil ditambah');

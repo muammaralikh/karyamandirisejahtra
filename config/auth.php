@@ -112,4 +112,6 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    'super_admin_email' => env('SUPERADMIN_EMAIL', 'karyamandirisejahtera.dkw@gmail.com'),
+
 ];

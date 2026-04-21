@@ -27,8 +27,9 @@ class ProdukController extends Controller
 
         $produk = $query->paginate(10)->withQueryString();
         $kategoris = Kategori::all();
+        $stockProduk = Produk::with('kategori')->orderBy('nama')->get();
 
-        return view('admin.pages.produk', compact('produk', 'kategoris'), $this->setActive('produk'));
+        return view('admin.pages.produk', compact('produk', 'kategoris', 'stockProduk'), $this->setActive('produk'));
     }
     public function showall()
     {
@@ -49,6 +50,7 @@ class ProdukController extends Controller
             'kategori_id' => 'required',
             'nama' => 'required',
             'harga' => 'required|numeric',
+            'stok' => 'required|integer|min:0',
             'deskripsi' => 'required',
             'gambar' => 'nullable|max:2048',
         ]);
@@ -65,6 +67,7 @@ class ProdukController extends Controller
             'nama' => $request->nama,
             'deskripsi' => $request->deskripsi,
             'harga' => $request->harga,
+            'stok' => $request->stok,
             'gambar' => $namaFile,
         ]);
 
@@ -77,6 +80,7 @@ class ProdukController extends Controller
             'kategori_id' => 'required',
             'nama' => 'required',
             'harga' => 'required|numeric',
+            'stok' => 'required|integer|min:0',
             'deskripsi' => 'nullable|string',
             'gambar' => 'nullable|max:2048',
         ]);

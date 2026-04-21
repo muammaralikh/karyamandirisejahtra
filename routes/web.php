@@ -30,6 +30,10 @@ Route::post('/proses-login', [AuthController::class, 'proses_login'])->name('pro
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/proses-register', [AuthController::class, 'proses_register'])->name('proses.register');
+Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [AuthController::class, 'resetPassword'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'proses_reset_password'])->name('password.update');
 
 // Route untuk cart
 Route::get('/cart', [HomeController::class, 'cart'])->name('cart');
@@ -128,4 +132,3 @@ Route::prefix('api')->group(function () {
 });
 Route::get('/export/excel', [PesananController::class, 'exportExcel'])
     ->name('pesanan.export.excel');
-

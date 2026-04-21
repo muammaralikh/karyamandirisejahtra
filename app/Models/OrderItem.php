@@ -148,7 +148,7 @@ class OrderItem extends Model
         }
         
         // Cek stok jika ada
-        if (isset($this->product->stock) && $this->product->stock < $this->qty) {
+        if (isset($this->product->stok) && $this->product->stok < $this->qty) {
             return false;
         }
         
@@ -159,8 +159,8 @@ class OrderItem extends Model
     public function refund()
     {
         // Kembalikan stok jika ada
-        if ($this->product && isset($this->product->stock)) {
-            $this->product->increment('stock', $this->qty);
+        if ($this->product && isset($this->product->stok)) {
+            $this->product->increment('stok', $this->qty);
         }
         
         return $this;

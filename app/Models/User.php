@@ -2,27 +2,53 @@
 
 namespace App\Models;
 
+use App\Notifications\ResetPasswordNotification;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\Kategori;
 
 class User extends Authenticatable
 {
+    use HasFactory, Notifiable;
 
     protected $table = 'users';
+
     protected $fillable = [
         'name',
+        'email',
         'username',
         'role',
         'status',
         'gender',
         'password',
     ];
+
     protected $hidden = [
         'password',
+        'remember_token',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+
+    public function getIsActiveAttribute(): bool
+    {
+        return strtolower((string) $this->status) === 'aktif';
+    }
+
+    public function getIsSuperAdminAttribute(): bool
+    {
+        $superAdminEmail = (string) config('auth.super_admin_email');
+
+        return $superAdminEmail !== '' && strcasecmp((string) $this->email, $superAdminEmail) === 0;
+    }
+
     public function addresses()
     {
         return $this->hasMany(Address::class);
@@ -94,5 +120,9 @@ class User extends Authenticatable
             ->get();
     }
 
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification($token));
+    }
 
 }

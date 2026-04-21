@@ -19,37 +19,6 @@
           background-color: rgba(255, 255, 255, 0.12);
           border-radius: 12px;
         }
-        .sidebar {
-          position: relative;
-        }
-        .sidebar-logout {
-          position: absolute;
-          bottom: 10px;
-          left: 0;
-          width: 100%;
-          padding: 0 12px 12px;
-        }
-        .sidebar-logout-link {
-          display: flex;
-          align-items: center;
-          color: #fff;
-          padding: 14px 18px;
-          border-radius: 12px;
-          background: transparent;
-          transition: background 0.2s ease;
-          width: 100%;
-          box-sizing: border-box;
-        }
-        .sidebar-logout-link:hover {
-          background: rgba(255,255,255,0.08);
-          text-decoration: none;
-        }
-        .sidebar-logout-link .nav-icon {
-          margin-right: 10px;
-        }
-        .sidebar-logout-link p {
-          margin: 0;
-        }
       </style>
       <!-- Brand Logo -->
       <a href="" class="brand-link text-center">
@@ -74,6 +43,13 @@
                 class="nav-link {{ ($activeProduk ?? '') == 'produk' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-box"></i>
                 <p class="text-white">Produk</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('produk.index') }}#stok-produk"
+                class="nav-link {{ ($activeProduk ?? '') == 'produk' ? 'active' : '' }}">
+                <i class="nav-icon fas fa-boxes"></i>
+                <p class="text-white">Stok Produk</p>
               </a>
             </li>
             
@@ -102,15 +78,6 @@
             </li>
 
           </ul>
-          <div class="sidebar-logout py-3 px-2">
-            <a href="#" onclick="event.preventDefault(); document.getElementById('sidebar-logout-form').submit();" class="nav-link sidebar-logout-link">
-              <i class="nav-icon fas fa-sign-out-alt text-white"></i>
-              <p class="text-white mb-0">Logout</p>
-            </a>
-            <form id="sidebar-logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-              @csrf
-            </form>
-          </div>
         </nav>
         <!-- /.sidebar-menu -->
       </div>

@@ -1,113 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('auth.layout')
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login</title>
+@section('title', 'Login')
+@section('heading', 'Masuk ke Akun')
+@section('subtitle', 'Login user maupun admin sekarang menggunakan email aktif Anda.')
 
-    <!-- Google Font -->
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+@section('content')
+    <form action="{{ route('proses.login') }}" method="POST" class="auth-form">
+        @csrf
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="{{ asset('admin/assets/plugins/fontawesome-free/css/all.min.css') }}">
-
-    <!-- AdminLTE -->
-    <link rel="stylesheet" href="{{ asset('admin/assets/dist/css/adminlte.min.css') }}">
-</head>
-
-<body class="hold-transition login-page" style="background:#2a9d8f;">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        @if(session('success'))
-            <script>
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: '{{ session('success') }}',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-            </script>
-        @endif
-
-        @if(session('error'))
-            <script>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: '{{ session('error') }}'
-                });
-            </script>
-        @endif
-    <div class="login-box">
-        <!-- CARD -->
-        <div class="card card-outline card-primary">
-            <div class="card-header text-center">
-                <h3 class="mb-0">Login Sistem</h3>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <div class="input-wrap">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="nama@email.com" required autofocus>
             </div>
-
-            <div class="card-body">
-                <p class="login-box-msg">Silakan login untuk melanjutkan</p>
-                <form action="{{ route('proses.login') }}" method="POST">
-                    @csrf
-
-                    <!-- USERNAME / EMAIL -->
-                    <div class="input-group mb-3">
-                        <input type="text" name="username" class="form-control" placeholder="Username" required
-                            autofocus>
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-user"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- PASSWORD -->
-                    <div class="input-group mb-3">
-                        <input type="password" name="password" class="form-control" placeholder="Password" required>
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- REMEMBER -->
-                    <div class="row mb-3">
-                        <div class="col-8">
-                            <div class="icheck-primary">
-                                <input type="checkbox" id="remember" name="remember">
-                                <label for="remember">
-                                    Ingat Saya
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- BUTTON -->
-                    <div class="row">
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary btn-block">
-                                <i class="fas fa-sign-in-alt"></i> Login
-                            </button>
-                        </div>
-                    </div>
-                </form>
-
-                <hr>
-
-                <p class="mb-1 text-center">
-                    <a href="{{ route('register') }}">Daftar Akun?</a>
-                </p>
-            </div>
+            @error('email')
+                <small class="form-error">{{ $message }}</small>
+            @enderror
         </div>
-    </div>
 
-    <!-- JS -->
-    <script src="{{ asset('admin/assets/plugins/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('admin/assets/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('admin/assets/dist/js/adminlte.min.js') }}"></script>
-</body>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-wrap">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" name="password" placeholder="Masukkan password" required>
+            </div>
+            @error('password')
+                <small class="form-error">{{ $message }}</small>
+            @enderror
+        </div>
 
-</html>
+        <div class="form-row">
+            <label class="checkbox-wrap">
+                <input type="checkbox" name="remember" value="1" {{ old('remember') ? 'checked' : '' }}>
+                <span>Ingat saya</span>
+            </label>
+            <a href="{{ route('password.request') }}" class="text-link">Lupa password?</a>
+        </div>
+
+        <button type="submit" class="auth-button">Login</button>
+    </form>
+
+    <p class="auth-switch">
+        Belum punya akun?
+        <a href="{{ route('register') }}">Daftar sekarang</a>
+    </p>
+@endsection

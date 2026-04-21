@@ -36,9 +36,17 @@ class PesananController extends Controller
         ]);
 
         $order = Order::findOrFail($id);
+        $previousStatus = $order->status;
+        $newStatus = $request->status;
+
+        if ($previousStatus !== 'cancelled' && $newStatus === 'cancelled') {
+            $order->cancel();
+
+            return redirect()->back()->with('success', 'Status pesanan berhasil diperbarui');
+        }
 
         $order->update([
-            'status' => $request->status
+            'status' => $newStatus
         ]);
 
         return redirect()->back()->with('success', 'Status pesanan berhasil diperbarui');
@@ -50,6 +58,10 @@ class PesananController extends Controller
 
         try {
             $order = Order::with('items')->findOrFail($id);
+
+            if ($order->status !== 'cancelled') {
+                $order->releaseStock();
+            }
 
             // Hapus item pesanan dulu
             $order->items()->delete();
@@ -71,8 +83,8 @@ class PesananController extends Controller
         }
     }
     public function exportExcel()
-        {
-        $filename = 'laporan pesanan.csv';
+    {
+        $filename = 'laporan-pesanan-' . now()->format('Y-m-d_His') . '.csv';
 
         $headers = [
             "Content-Type" => "text/csv; charset=UTF-8",
@@ -81,47 +93,45 @@ class PesananController extends Controller
 
         $callback = function () {
             $file = fopen('php://output', 'w');
-            
-            // 1. Tambahkan BOM (Byte Orderaaark) agar Excelzzzz atis membaca encoding UTF-8 dengan benar
-            fputs($file, "\xEF\xBB\xBF");
 
-            // 2. Gunakan separator titik koma (;) yang lebih ramah untuk Excel dengan region Indonesia
+            fputs($file, "\xEF\xBB\xBF");
+            fwrite($file, "sep=;\n");
+
             $separator = ';';
 
             fputcsv($file, [
                 'Tanggal',
                 'Nama Pemesan',
                 'Alamat Lengkap',
-                'Nama Produk',
-                'Jumlah',
-                'Harga Produk',
+                'Daftar Produk',
+                'Total Item',
+                'Total Belanja Produk',
                 'Ongkir',
-                'Subtotal',
+                'Total Akhir',
                 'Status Pesanan'
             ], $separator);
 
             $orders = Order::with(['items', 'user'])
-            ->orderBy('created_at', 'desc') 
-            ->get();
+                ->orderBy('created_at', 'desc')
+                ->get();
 
             foreach ($orders as $order) {
-                foreach ($order->items as $item) {
-                    
-                    // 3. Bersihkan enter/newline dari teks alamat yang bikin baris di Excel hancur
-                    $alamatLengkap = str_replace(["\r\n", "\r", "\n"], ' ', $order->shipping_address);
+                $alamatLengkap = preg_replace('/\s+/', ' ', $order->shipping_address ?? '-');
+                $daftarProduk = $order->items->map(function ($item) {
+                    return $item->product_name . ' x' . $item->qty;
+                })->implode(', ');
 
-                    fputcsv($file, [
-                        $order->created_at->format('d-m-Y'),
-                        $order->user->name ?? '-', 
-                        $alamatLengkap,
-                        $item->product_name,
-                        $item->qty,
-                        $item->price,
-                        $order->shipping_cost,
-                        $order->subtotal,
-                        strtoupper($order->status)
-                    ], $separator);
-                }
+                fputcsv($file, [
+                    $order->created_at->format('d-m-Y'),
+                    $order->user->name ?? '-',
+                    $alamatLengkap,
+                    $daftarProduk ?: '-',
+                    $order->items->sum('qty'),
+                    $order->subtotal,
+                    $order->shipping_cost,
+                    $order->total,
+                    strtoupper($order->status)
+                ], $separator);
             }
 
             fclose($file);

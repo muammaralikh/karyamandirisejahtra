@@ -22,6 +22,7 @@ class Produk extends Authenticatable
         'kategori_id',
         'harga',
         'deskripsi',
+        'stok',
     ];
     public function kategori()
     {
@@ -71,20 +72,20 @@ class Produk extends Authenticatable
     }
     public function updateStockAfterOrder($qty)
     {
-        if ($this->stock !== null) {
-            if ($this->stock < $qty) {
+        if ($this->stok !== null) {
+            if ($this->stok < $qty) {
                 throw new \Exception('Insufficient stock');
             }
 
-            $this->decrement('stock', $qty);
+            $this->decrement('stok', $qty);
         }
 
         return $this;
     }
     public function restoreStock($qty)
     {
-        if ($this->stock !== null) {
-            $this->increment('stock', $qty);
+        if ($this->stok !== null) {
+            $this->increment('stok', $qty);
         }
 
         return $this;

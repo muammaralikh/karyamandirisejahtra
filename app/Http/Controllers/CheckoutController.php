@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Address;
 use App\Models\Kategori;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
@@ -70,40 +71,81 @@ class CheckoutController extends Controller
             if ($cartItems->isEmpty()) {
                 return redirect()->route('cart.index')->with('error', 'Keranjang belanja kosong');
             }
+
+            foreach ($cartItems as $cartItem) {
+                if (!$cartItem->produk) {
+                    return redirect()->back()->with('error', 'Ada produk di keranjang yang sudah tidak tersedia.');
+                }
+
+                if ($cartItem->qty > $cartItem->produk->stok) {
+                    return redirect()->back()->with(
+                        'error',
+                        "Stok {$cartItem->produk->nama} tidak mencukupi. Tersisa {$cartItem->produk->stok}."
+                    );
+                }
+            }
+
             $subtotal = $cartItems->sum(function ($item) {
                 return $item->qty * $item->price;
             }) + 10000;
             $orderNumber = 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(6));
             $address = Address::findOrFail($request->address_id);
-            $order = Order::create([
-                'user_id' => $user->id,
-                'order_number' => $orderNumber,
-                'status' => 'pending',
-                'subtotal' => $subtotal,
-                'shipping_cost' => 10000,
-                'total' => $subtotal,
-                'shipping_method' => 'Ongkir',
-                'payment_method' => 'Transfer Bank',
-                'notes' => $request->notes,
-                'recipient_name' => $address->recipient_name,
-                'recipient_phone' => $address->recipient_phone,
-                'shipping_address' => $address->full_address,
-                'province' => $address->province_name,
-                'city' => $address->city_name,
-                'district' => $address->district_name,
-                'postal_code' => $address->postal_code
-            ]);
-            foreach ($cartItems as $cartItem) {
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $cartItem->produk_id,
-                    'product_name' => $cartItem->produk->nama,
-                    'qty' => $cartItem->qty,
-                    'price' => $cartItem->price,
-                    'attributes' => $cartItem->attributes
+            $order = DB::transaction(function () use ($user, $request, $cartItems, $subtotal, $orderNumber, $address) {
+                $lockedItems = Cart::where('user_id', $user->id)
+                    ->with(['produk' => function ($query) {
+                        $query->lockForUpdate();
+                    }])
+                    ->lockForUpdate()
+                    ->get();
+
+                foreach ($lockedItems as $cartItem) {
+                    if (!$cartItem->produk) {
+                        throw new \RuntimeException('Ada produk di keranjang yang sudah tidak tersedia.');
+                    }
+
+                    if ($cartItem->qty > $cartItem->produk->stok) {
+                        throw new \RuntimeException(
+                            "Stok {$cartItem->produk->nama} tidak mencukupi. Tersisa {$cartItem->produk->stok}."
+                        );
+                    }
+                }
+
+                $order = Order::create([
+                    'user_id' => $user->id,
+                    'order_number' => $orderNumber,
+                    'status' => 'pending',
+                    'subtotal' => $subtotal,
+                    'shipping_cost' => 10000,
+                    'total' => $subtotal,
+                    'shipping_method' => 'Ongkir',
+                    'payment_method' => 'Transfer Bank',
+                    'notes' => $request->notes,
+                    'recipient_name' => $address->recipient_name,
+                    'recipient_phone' => $address->recipient_phone,
+                    'shipping_address' => $address->full_address,
+                    'province' => $address->province_name,
+                    'city' => $address->city_name,
+                    'district' => $address->district_name,
+                    'postal_code' => $address->postal_code
                 ]);
-            }
-            Cart::where('user_id', $user->id)->delete();
+
+                foreach ($lockedItems as $cartItem) {
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $cartItem->produk_id,
+                        'product_name' => $cartItem->produk->nama,
+                        'qty' => $cartItem->qty,
+                        'price' => $cartItem->price,
+                        'attributes' => $cartItem->attributes
+                    ]);
+                }
+
+                $order->reserveStock();
+
+                Cart::where('user_id', $user->id)->delete();
+
+                return $order;
+            });
             $whatsappMessage = $this->formatWhatsAppMessage($order, $cartItems, $address);
             return redirect()->away($whatsappMessage);
 

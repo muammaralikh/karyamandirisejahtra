@@ -434,7 +434,7 @@
                 <!-- User Profile Card -->
                 <div class="user-profile-card">
                     <div class="user-name">{{ $user->name }}</div>
-                    <div class="user-email">{{ $user->username }}</div>
+                    <div class="user-email">{{ $user->email }}</div>
                 </div>
 
                 <!-- Menu Items -->
@@ -450,6 +450,10 @@
                     <a href="#" class="menu-item" data-tab="orders">
                         <i class="fas fa-shopping-bag"></i>
                         <span>Riwayat Pesanan</span>
+                    </a>
+                    <a href="#" class="menu-item" data-tab="stock">
+                        <i class="fas fa-boxes"></i>
+                        <span>Stok Produk</span>
                     </a>
                     <a href="#" class="menu-item" data-tab="password">
                         <i class="fas fa-key"></i>
@@ -495,9 +499,20 @@
 
                         <!-- Email -->
                         <div class="form-group">
+                            <label for="email" class="form-label required">Email</label>
+                            <input type="email" id="email" name="email" class="form-control"
+                                value="{{ old('email', $user->email) }}" required>
+                            @error('email')
+                                <p class="form-text" style="color: var(--danger-color);">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Username -->
+                        <div class="form-group">
                             <label for="username" class="form-label required">Username</label>
-                            <input type="username" id="username" name="username" class="form-control"
-                                value="{{ old('username', $user->username) }}" required>
+                            <input type="text" id="username" name="username" class="form-control"
+                                value="{{ old('username', $user->username) }}"
+                                placeholder="Opsional, akan dibuat otomatis jika kosong">
                             @error('username')
                                 <p class="form-text" style="color: var(--danger-color);">{{ $message }}</p>
                             @enderror
@@ -792,6 +807,62 @@
                     @endif
                 </div>
 
+                <!-- Tab: Stock -->
+                <div id="tab-stock" class="tab-content">
+                    <div class="tab-header">
+                        <h2 class="tab-title">Stok Produk</h2>
+                        <p class="tab-subtitle">Data stok ini sinkron dengan produk yang tampil di web</p>
+                    </div>
+
+                    <div class="stock-overview">
+                        <div class="stock-overview-card">
+                            <span>Total Produk</span>
+                            <strong>{{ $stockProducts->count() }}</strong>
+                        </div>
+                        <div class="stock-overview-card">
+                            <span>Tersedia</span>
+                            <strong>{{ $stockProducts->where('stok', '>', 0)->count() }}</strong>
+                        </div>
+                        <div class="stock-overview-card">
+                            <span>Habis</span>
+                            <strong>{{ $stockProducts->where('stok', '<=', 0)->count() }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="stock-table-wrapper">
+                        <table class="stock-table">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Produk</th>
+                                    <th>Kategori</th>
+                                    <th>Stok</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($stockProducts as $product)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $product->nama }}</td>
+                                        <td>{{ $product->kategori->nama ?? '-' }}</td>
+                                        <td>{{ $product->stok ?? 0 }}</td>
+                                        <td>
+                                            <span class="stock-badge {{ ($product->stok ?? 0) > 0 ? 'in-stock' : 'out-stock' }}">
+                                                {{ ($product->stok ?? 0) > 0 ? 'Tersedia' : 'Habis' }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="stock-empty">Belum ada data stok produk.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Tab: Password -->
                 <div id="tab-password" class="tab-content">
                     <div class="tab-header">
@@ -1071,6 +1142,79 @@
             color: #adb5bd;
             cursor: not-allowed;
             background-color: #f8f9fa;
+        }
+
+        .stock-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stock-overview-card {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 18px;
+            background: #f8fbf8;
+        }
+
+        .stock-overview-card span {
+            display: block;
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+
+        .stock-overview-card strong {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+        }
+
+        .stock-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .stock-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .stock-table th,
+        .stock-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .stock-table th {
+            background: #f8f9fa;
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+
+        .stock-badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .stock-badge.in-stock {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .stock-badge.out-stock {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .stock-empty {
+            text-align: center;
+            color: #6c757d;
+            padding: 30px 15px;
         }
 
         /* Responsive */

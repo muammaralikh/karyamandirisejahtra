@@ -407,8 +407,8 @@
                                 <div class="input-group-prepend">
                                     <span class="input-group-text"><i class="fas fa-search"></i></span>
                                 </div>
-                                <input type="text" name="search" class="form-control" 
-                                       placeholder="Nama, username..." 
+                                    <input type="text" name="search" class="form-control" 
+                                       placeholder="Nama, username, email..." 
                                        value="{{ request('search') }}">
                             </div>
                         </div>
@@ -488,6 +488,9 @@
                                                     <strong class="d-block">{{ $user->name }}</strong>
                                                     <small class="text-muted">
                                                         <i class="fas fa-user mr-1"></i>{{ $user->username }}
+                                                    </small>
+                                                    <small class="d-block text-muted">
+                                                        <i class="fas fa-envelope mr-1"></i>{{ $user->email }}
                                                     </small>
                                                     <small class="d-block text-muted">
                                                         Bergabung: {{ $user->created_at->format('d M Y') }}
@@ -590,11 +593,16 @@
                                 <label>Nama Lengkap <span class="text-danger">*</span></label>
                                 <input type="text" name="name" class="form-control" required>
                             </div>
+
+                            <div class="form-group">
+                                <label>Email <span class="text-danger">*</span></label>
+                                <input type="email" name="email" class="form-control" required>
+                            </div>
                             
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label>Username <span class="text-danger">*</span></label>
-                                    <input type="text" name="username" class="form-control" required>
+                                    <label>Username</label>
+                                    <input type="text" name="username" class="form-control" placeholder="Opsional">
                                 </div>
                             </div>
                             
@@ -734,11 +742,16 @@
                                     <label>Nama Lengkap <span class="text-danger">*</span></label>
                                     <input type="text" name="name" class="form-control" value="{{ $user->name }}" required>
                                 </div>
+
+                                <div class="form-group">
+                                    <label>Email <span class="text-danger">*</span></label>
+                                    <input type="email" name="email" class="form-control" value="{{ $user->email }}" required>
+                                </div>
                                 
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
-                                        <label>Username <span class="text-danger">*</span></label>
-                                        <input type="text" name="username" class="form-control" value="{{ $user->username }}" required>
+                                        <label>Username</label>
+                                        <input type="text" name="username" class="form-control" value="{{ $user->username }}">
                                     </div>
                                 </div>
                             </div>

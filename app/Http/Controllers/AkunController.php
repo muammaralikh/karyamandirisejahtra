@@ -2,18 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\GeneratesUniqueUsername;
+use App\Models\Address;
+use App\Models\City;
+use App\Models\District;
+use App\Models\Kategori;
+use App\Models\Produk;
+use App\Models\Province;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use App\Models\Kategori;
-use App\Models\District;
-use App\Models\City;
-use App\Models\Address;
-use App\Models\Province;
 
 class AkunController extends Controller
 {
+    use GeneratesUniqueUsername;
+
     public function myAccount()
     {
         $user = Auth::user();
@@ -30,10 +33,11 @@ class AkunController extends Controller
             ->with(['items.product'])
             ->latest()
             ->paginate(10);
+        $stockProducts = Produk::with('kategori')->orderBy('nama')->get();
         $provinces = Province::orderBy('name')->get();
         $categories = Kategori::latest()->get();
 
-        return view('akun.index', compact('user', 'categories', 'provinces', 'orders'));
+        return view('akun.index', compact('user', 'categories', 'provinces', 'orders', 'stockProducts'));
     }
 
     public function updateMyAccount(Request $request)
@@ -43,18 +47,22 @@ class AkunController extends Controller
         // Validasi input
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'username' => 'nullable|string|max:255|unique:users,username,' . $user->id,
             'gender' => 'nullable|in:male,female',
         ], [
             'name.required' => 'Nama lengkap harus diisi',
-            'username.required' => 'Username harus diisi',
+            'email.required' => 'Email harus diisi',
+            'email.email' => 'Format email tidak valid',
+            'email.unique' => 'Email sudah digunakan',
             'username.unique' => 'Username sudah digunakan',
         ]);
 
         try {
             // Update data user
             $user->name = $validated['name'];
-            $user->username = $validated['username'];
+            $user->email = $validated['email'];
+            $user->username = $validated['username'] ?? $this->generateUniqueUsernameFromEmail($validated['email'], $user->id);
             $user->gender = $validated['gender'] ?? null;
 
             $user->save();

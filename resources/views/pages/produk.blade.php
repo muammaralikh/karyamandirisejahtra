@@ -40,13 +40,24 @@
                             <span class="product-category">{{ $product->kategori->nama }}</span>
                             <h3>{{ $product['nama'] }}</h3>
                             <p class="product-price">Rp {{ number_format($product['harga'], 0, ',', '.') }}</p>
+                            <p class="product-stock">
+                                Stok:
+                                <strong>{{ $product->stok ?? 0 }}</strong>
+                                {{ ($product->stok ?? 0) > 0 ? 'tersedia' : 'habis' }}
+                            </p>
                             <p class="product-desc">{{ $product['deskripsi'] }}</p>
                             <form action="{{ route('user.account.cart.add') }}" method="POST" class="product-form">
                                 @csrf
                                 <input type="hidden" name="produk_id" value="{{ $product->id }}">
-                                <button type="submit" class="btn-cart">
-                                    <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
-                                </button>
+                                @if(($product->stok ?? 0) > 0)
+                                    <button type="submit" class="btn-cart">
+                                        <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
+                                    </button>
+                                @else
+                                    <button type="button" class="btn-cart" disabled>
+                                        <i class="fas fa-box-open"></i> Stok Habis
+                                    </button>
+                                @endif
                             </form>
                         </div>
                     </div>

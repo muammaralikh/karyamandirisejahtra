@@ -76,6 +76,31 @@
         margin-bottom: 10px;
     }
 
+    .stock-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .stock-summary-card {
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        padding: 18px;
+        background: #f8faf8;
+    }
+
+    .stock-summary-card h4 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+    }
+
+    .stock-summary-card p {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
     @media (max-width: 768px) {
         .btn-action-group .btn {
             min-width: 60px;
@@ -211,6 +236,7 @@
                                     <th width="120">Kategori</th>
                                     <th width="200">Deskripsi</th>
                                     <th width="120">Harga</th>
+                                    <th width="100">Stok</th>
                                     <th width="150" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -238,6 +264,13 @@
                                         </td>
                                         <td class="text-nowrap">Rp {{ number_format($p->harga, 0, ',', '.') }}</td>
                                         <td>
+                                            @if(($p->stok ?? 0) > 0)
+                                                <span class="badge badge-success badge-custom">{{ $p->stok }} tersedia</span>
+                                            @else
+                                                <span class="badge badge-danger badge-custom">Habis</span>
+                                            @endif
+                                        </td>
+                                        <td>
                                             <div class="btn-action-group">
                                                 <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#edit{{ $p->id }}" title="Edit">
                                                     <i class="fas fa-edit"></i> <span class="d-none d-md-inline">Edit</span>
@@ -250,7 +283,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center py-4">
+                                        <td colspan="8" class="text-center py-4">
                                             <div class="text-muted">
                                                 <i class="fas fa-box-open fa-2x mb-3"></i>
                                                 <p>Tidak ada produk ditemukan</p>
@@ -266,6 +299,61 @@
                             {{ $produk->links() }}
                         </div>
                     @endif
+                </div>
+            </div>
+            <div class="card" id="stok-produk">
+                <div class="card-header">
+                    <h3 class="card-title">Tabel Stok Sinkron dengan Web</h3>
+                </div>
+                <div class="card-body">
+                    <div class="stock-summary-grid">
+                        <div class="stock-summary-card">
+                            <h4>Total Produk</h4>
+                            <p>{{ $stockProduk->count() }}</p>
+                        </div>
+                        <div class="stock-summary-card">
+                            <h4>Produk Tersedia</h4>
+                            <p>{{ $stockProduk->where('stok', '>', 0)->count() }}</p>
+                        </div>
+                        <div class="stock-summary-card">
+                            <h4>Produk Habis</h4>
+                            <p>{{ $stockProduk->where('stok', '<=', 0)->count() }}</p>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th width="40">#</th>
+                                    <th>Nama Produk</th>
+                                    <th width="180">Kategori</th>
+                                    <th width="120">Stok</th>
+                                    <th width="160">Status di Web</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($stockProduk as $item)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $item->nama }}</td>
+                                        <td>{{ $item->kategori->nama ?? '-' }}</td>
+                                        <td>{{ $item->stok ?? 0 }}</td>
+                                        <td>
+                                            @if(($item->stok ?? 0) > 0)
+                                                <span class="badge badge-success badge-custom">{{ $item->stok }} tersedia</span>
+                                            @else
+                                                <span class="badge badge-danger badge-custom">Stok habis</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">Belum ada data stok produk.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -323,6 +411,15 @@
                                     <label class="custom-file-label" for="gambarInput">Pilih file...</label>
                                 </div>
                                 <small class="text-muted">Format: JPG, PNG, JPEG (Maks: 2MB)</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Stok <span class="text-danger">*</span></label>
+                                <input type="number" name="stok" placeholder="Masukkan jumlah stok" class="form-control" required min="0" value="0">
                             </div>
                         </div>
                     </div>
@@ -401,6 +498,15 @@
                                         <label class="custom-file-label" for="editGambar{{ $p->id }}">Pilih file...</label>
                                     </div>
                                     <small class="text-muted">Kosongkan jika tidak ingin mengganti</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Stok <span class="text-danger">*</span></label>
+                                    <input type="number" name="stok" value="{{ $p->stok ?? 0 }}" class="form-control" required min="0">
                                 </div>
                             </div>
                         </div>
