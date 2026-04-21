@@ -16,11 +16,6 @@
                 <li><a href="{{ route('home') }}" class="{{ $currentRoute === 'home' ? 'active' : '' }}">Beranda</a></li>
                 <li><a href="{{ route('produk.showall') }}" class="{{ $currentRoute === 'produk.showall' ? 'active' : '' }}">Produk</a></li>
                 <li><a href="{{ route('about') }}" class="{{ $currentRoute === 'about' ? 'active' : '' }}">Tentang</a></li>
-                @auth
-                    <li><a href="{{ route('user.account.my-account') }}" class="{{ str_starts_with((string) $currentRoute, 'user.account.') ? 'active' : '' }}">Akun</a></li>
-                @else
-                    <li><a href="{{ route('login') }}" class="{{ $currentRoute === 'login' ? 'active' : '' }}">Masuk</a></li>
-                @endauth
             </ul>
         </nav>
 

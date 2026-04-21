@@ -13,22 +13,19 @@
                 </div>
             </div>
             <div class="footer-section">
-                <h3>Link Cepat</h3>
-                <ul class="footer-links">
-                    <li><a href="{{ route('home') }}">Home</a></li>
-                    <li><a href="{{ route('produk.index') }}">Semua Produk</a></li>
-                    <li><a href="{{ route('about') }}">Tentang Kami</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
                 <h3>Kategori</h3>
                 <ul class="footer-links">
-                    @foreach($categories as $category)
                     <li>
-                        <a href="{{ route('kategori.index') }}?category={{ strtolower($category['name']) }}">
-                            {{ $category['nama'] }}
+                        <a href="{{ route('produk.showall') }}">
+                            Semua Produk
                         </a>
                     </li>
+                    @foreach($categories as $category)
+                        <li>
+                            <a href="{{ route('produk.kategori', $category->id) }}">
+                                {{ $category->nama }}
+                            </a>
+                        </li>
                     @endforeach
                 </ul>
             </div>
