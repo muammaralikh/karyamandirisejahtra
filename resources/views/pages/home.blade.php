@@ -8,6 +8,7 @@
         justify-content: center;
         gap: 22px;
         width: 100%;
+        margin: 0 auto;
     }
 
     .category-card {
@@ -44,6 +45,8 @@
         .category-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 14px;
+            max-width: 520px;
+            margin: 0 auto;
         }
 
         .category-card {
@@ -102,6 +105,10 @@
     }
 
     @media (max-width: 480px) {
+        .category-grid {
+            max-width: 100%;
+        }
+
         .featured-products .product-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 12px;

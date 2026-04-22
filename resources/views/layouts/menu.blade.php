@@ -124,6 +124,7 @@
             }
 
             .nav-list {
+                display: flex;
                 gap: 42px;
                 align-items: center;
             }
@@ -138,6 +139,8 @@
                 background: transparent;
                 border: 0;
                 white-space: nowrap;
+                font-family: inherit;
+                line-height: 1.2;
             }
 
             .nav-dropdown {
@@ -151,6 +154,7 @@
                 align-items: center;
                 gap: 8px;
                 cursor: pointer;
+                appearance: none;
             }
 
             .nav-dropdown-toggle i {
@@ -384,6 +388,7 @@
                 border: 0;
                 background: transparent;
                 color: #333;
+                display: none;
             }
 
             /* Responsive */
@@ -548,8 +553,74 @@
 </div>
 
 <style>
+    .mobile-menu {
+        display: block;
+        position: fixed;
+        top: calc(84px + env(safe-area-inset-top));
+        left: 14px;
+        right: 14px;
+        width: auto;
+        max-height: calc(100vh - 104px - env(safe-area-inset-top));
+        overflow-y: auto;
+        background: rgba(255, 255, 255, 0.98);
+        border: 1px solid rgba(76, 175, 80, 0.12);
+        border-radius: 22px;
+        box-shadow: 0 18px 40px rgba(31, 90, 51, 0.16);
+        backdrop-filter: blur(14px);
+        z-index: 1200;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(-10px);
+        transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
+    }
+
+    .mobile-menu.active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+
+    .mobile-menu ul {
+        list-style: none;
+        padding: 14px;
+        margin: 0;
+    }
+
+    .mobile-menu li {
+        margin: 6px 0;
+    }
+
+    .mobile-menu a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 48px;
+        padding: 12px 14px;
+        border-radius: 14px;
+        color: #284431;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .mobile-menu a i {
+        width: 20px;
+        text-align: center;
+        color: #4CAF50;
+    }
+
+    .mobile-menu a:hover,
+    .mobile-menu a.active {
+        background: rgba(76, 175, 80, 0.1);
+        color: #2f7a47;
+    }
+
     .mobile-menu-group {
         margin: 8px 0 14px;
+        padding-top: 4px;
+        border-top: 1px solid rgba(76, 175, 80, 0.08);
     }
 
     .mobile-menu-category-title {
@@ -567,6 +638,7 @@
         gap: 10px;
         margin-left: 14px;
         padding-left: 14px;
+        font-weight: 500 !important;
     }
 
     .mobile-submenu-link i {
@@ -580,6 +652,12 @@
         padding: 8px 15px 8px 29px;
         color: #7b8a84;
         font-size: 0.92rem;
+    }
+
+    @media (min-width: 769px) {
+        .mobile-menu {
+            display: none !important;
+        }
     }
 </style>
 
