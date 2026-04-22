@@ -1,6 +1,7 @@
 @php
     $currentRoute = Route::currentRouteName();
-
+    $searchKeyword = request('search', '');
+    $searchOpen = $currentRoute === 'produk.showall' && $searchKeyword !== '';
 @endphp
 
 <header class="site-header">
@@ -20,9 +21,24 @@
         </nav>
 
         <div class="header-right">
-            <a href="{{ route('produk.showall') }}" class="icon-search">
-                <i class="fas fa-search"></i>
-            </a>
+            <div class="search-box {{ $searchOpen ? 'active' : '' }}" id="navbarSearchBox">
+                <button class="icon-search search-toggle" id="navbarSearchToggle" type="button" aria-label="Buka pencarian">
+                    <i class="fas fa-search"></i>
+                </button>
+                <form action="{{ route('produk.showall') }}" method="GET" class="search-form" role="search">
+                    <input
+                        type="text"
+                        name="search"
+                        class="search-input"
+                        placeholder="Cari produk..."
+                        value="{{ $searchKeyword }}"
+                        autocomplete="off"
+                    >
+                    <button type="submit" class="search-submit" aria-label="Cari produk">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
 
             <!-- Cart Link -->
             <a href="{{ route('user.account.cart.index') }}" class="cart-link">
@@ -110,6 +126,12 @@
                 gap: 22px;
             }
 
+            .search-box {
+                position: relative;
+                display: flex;
+                align-items: center;
+            }
+
             .icon-search {
                 color: #555;
                 font-size: 1.45rem;
@@ -119,11 +141,74 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                border: 0;
+                background: transparent;
+                cursor: pointer;
             }
 
             .icon-search:hover {
                 color: #4CAF50;
                 background: rgba(76, 175, 80, 0.1);
+            }
+
+            .search-form {
+                position: absolute;
+                top: 50%;
+                right: calc(100% + 10px);
+                transform: translateY(-50%);
+                width: 0;
+                opacity: 0;
+                pointer-events: none;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 0;
+                overflow: hidden;
+                background: #fff;
+                border: 1px solid rgba(76, 175, 80, 0.18);
+                border-radius: 999px;
+                box-shadow: 0 14px 28px rgba(31, 90, 51, 0.12);
+                transition: width 0.25s ease, opacity 0.25s ease, padding 0.25s ease;
+            }
+
+            .search-box.active .search-form {
+                width: 300px;
+                opacity: 1;
+                pointer-events: auto;
+                padding: 8px 10px 8px 16px;
+            }
+
+            .search-input {
+                flex: 1;
+                min-width: 0;
+                border: 0;
+                outline: none;
+                background: transparent;
+                font-size: 0.96rem;
+                color: #23412c;
+            }
+
+            .search-input::placeholder {
+                color: #7b8a84;
+            }
+
+            .search-submit {
+                width: 40px;
+                height: 40px;
+                border: 0;
+                border-radius: 50%;
+                background: #4CAF50;
+                color: #fff;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: background 0.2s ease, transform 0.2s ease;
+            }
+
+            .search-submit:hover {
+                background: #3f9744;
+                transform: translateY(-1px);
             }
 
             .cart-link {
@@ -219,6 +304,16 @@
                     justify-self: auto;
                 }
 
+                .search-form {
+                    top: calc(100% + 10px);
+                    right: 0;
+                    transform: none;
+                }
+
+                .search-box.active .search-form {
+                    width: min(78vw, 260px);
+                }
+
                 .cart-text {
                     display: none;
                 }
@@ -269,6 +364,11 @@
                 .mobile-menu-toggle {
                     width: 38px;
                     height: 38px;
+                }
+
+                .search-box.active .search-form {
+                    width: min(78vw, 230px);
+                    padding-left: 12px;
                 }
             }
         </style>
@@ -328,31 +428,47 @@
     document.addEventListener('DOMContentLoaded', function () {
         const mobileMenuToggle = document.getElementById('mobileMenuToggle');
         const mobileMenu = document.getElementById('mobileMenu');
+        const searchBox = document.getElementById('navbarSearchBox');
+        const searchToggle = document.getElementById('navbarSearchToggle');
+        const searchInput = searchBox ? searchBox.querySelector('.search-input') : null;
 
-        if (!mobileMenuToggle || !mobileMenu) {
-            return;
-        }
+        if (mobileMenuToggle && mobileMenu) {
+            mobileMenuToggle.addEventListener('click', function () {
+                mobileMenu.classList.toggle('active');
 
-        mobileMenuToggle.addEventListener('click', function () {
-            mobileMenu.classList.toggle('active');
-
-            const icon = this.querySelector('i');
-            if (icon) {
-                icon.classList.toggle('fa-bars');
-                icon.classList.toggle('fa-times');
-            }
-        });
-
-        mobileMenu.querySelectorAll('a').forEach(function (link) {
-            link.addEventListener('click', function () {
-                mobileMenu.classList.remove('active');
-
-                const icon = mobileMenuToggle.querySelector('i');
+                const icon = this.querySelector('i');
                 if (icon) {
-                    icon.classList.add('fa-bars');
-                    icon.classList.remove('fa-times');
+                    icon.classList.toggle('fa-bars');
+                    icon.classList.toggle('fa-times');
                 }
             });
-        });
+
+            mobileMenu.querySelectorAll('a').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    mobileMenu.classList.remove('active');
+
+                    const icon = mobileMenuToggle.querySelector('i');
+                    if (icon) {
+                        icon.classList.add('fa-bars');
+                        icon.classList.remove('fa-times');
+                    }
+                });
+            });
+        }
+
+        if (searchBox && searchToggle && searchInput) {
+            searchToggle.addEventListener('click', function () {
+                const isActive = searchBox.classList.toggle('active');
+                if (isActive) {
+                    setTimeout(() => searchInput.focus(), 120);
+                }
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!searchBox.contains(event.target)) {
+                    searchBox.classList.remove('active');
+                }
+            });
+        }
     });
 </script>

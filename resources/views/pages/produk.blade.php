@@ -3,6 +3,40 @@
 @section('title', $title)
 
 @section('content')
+    <style>
+        .section-subtitle {
+            margin-top: 10px;
+            color: #5c6f63;
+            font-size: 1rem;
+        }
+
+        .product-empty-state {
+            grid-column: 1 / -1;
+            background: #f7fbf7;
+            border: 1px solid rgba(76, 175, 80, 0.16);
+            border-radius: 24px;
+            padding: 48px 24px;
+            text-align: center;
+            color: #31533a;
+            box-shadow: 0 12px 28px rgba(31, 90, 51, 0.08);
+        }
+
+        .product-empty-state i {
+            font-size: 2rem;
+            color: #4CAF50;
+            margin-bottom: 14px;
+        }
+
+        .product-empty-state h3 {
+            margin-bottom: 10px;
+        }
+
+        .product-empty-state p {
+            margin: 0;
+            color: #607163;
+        }
+    </style>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @if(session('success'))
         <script>
@@ -29,9 +63,12 @@
         <div class="container">
             <div class="section-header">
                 <h2>Semua Produk</h2>
+                @if(!empty($searchKeyword))
+                    <p class="section-subtitle">Hasil pencarian untuk "{{ $searchKeyword }}"</p>
+                @endif
             </div>
             <div class="product-grid">
-                @foreach($Allproducts as $product)
+                @forelse($Allproducts as $product)
                     <div class="product-card">
                         <div class="product-image">
                             <img src="{{ asset('storage/'. $product->gambar) }}" alt="{{ $product['nama'] }}">
@@ -61,7 +98,13 @@
                             </form>
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <div class="product-empty-state">
+                        <i class="fas fa-search"></i>
+                        <h3>Produk tidak ditemukan</h3>
+                        <p>Coba gunakan kata kunci lain untuk mencari produk yang kamu inginkan.</p>
+                    </div>
+                @endforelse
             </div>
         </div>
     </section>

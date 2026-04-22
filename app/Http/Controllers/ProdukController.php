@@ -38,15 +38,26 @@ class ProdukController extends Controller
 
         return view('admin.pages.stok-produk', compact('stockProduk'), $this->setActive('stok-produk'));
     }
-    public function showall()
+    public function showall(Request $request)
     {
+        $productsQuery = Produk::with('kategori')->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $productsQuery->where(function ($query) use ($search) {
+                $query->where('nama', 'like', '%' . $search . '%')
+                    ->orWhere('deskripsi', 'like', '%' . $search . '%')
+                    ->orWhereHas('kategori', function ($kategoriQuery) use ($search) {
+                        $kategoriQuery->where('nama', 'like', '%' . $search . '%');
+                    });
+            });
+        }
+
         $data = [
             'title' => 'Semua Produk',
             'categories' => Kategori::latest()->get(),
-            'Allproducts' => Produk::with('kategori')
-                ->latest()
-                ->get(),
-
+            'Allproducts' => $productsQuery->get(),
+            'searchKeyword' => $request->search,
         ];
         return view('pages.produk', $data);
     }
