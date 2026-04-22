@@ -696,16 +696,25 @@ body {
     padding: 60px 0 20px;
 }
 
+.site-footer .container {
+    max-width: 1380px;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
 .footer-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: minmax(260px, 1fr) minmax(220px, 1fr) max-content;
     gap: 40px;
     margin-bottom: 40px;
+    align-items: start;
 }
 
 .footer-section-contact {
     justify-self: end;
     text-align: left;
+    width: max-content;
+    margin-left: auto;
 }
 
 .footer-section h3 {
@@ -944,6 +953,8 @@ body {
 
     .footer-section-contact {
         justify-self: stretch;
+        width: auto;
+        margin-left: 0;
     }
     
     .footer-bottom {
