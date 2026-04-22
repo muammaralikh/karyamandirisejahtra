@@ -115,22 +115,7 @@
 
 @push('scripts')
     <script>
-        
         document.addEventListener('DOMContentLoaded', function () {
-            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-            const mobileMenu = document.getElementById('mobileMenu');
-
-            if (mobileMenuToggle && mobileMenu) {
-                mobileMenuToggle.addEventListener('click', function () {
-                    mobileMenu.classList.toggle('active');
-                    this.querySelector('i').classList.toggle('fa-bars');
-                    this.querySelector('i').classList.toggle('fa-times');
-                });
-            }
-
-            setInterval(updateCountdown, 1000);
-            updateCountdown();
-
             const cartForms = document.querySelectorAll('.product-form');
             cartForms.forEach(form => {
                 form.addEventListener('submit', function (e) {

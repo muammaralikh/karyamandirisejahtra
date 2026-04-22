@@ -703,6 +703,11 @@ body {
     margin-bottom: 40px;
 }
 
+.footer-section-contact {
+    justify-self: end;
+    text-align: left;
+}
+
 .footer-section h3 {
     font-size: 1.4rem;
     margin-bottom: 20px;
@@ -935,6 +940,10 @@ body {
     
     .footer-grid {
         grid-template-columns: 1fr;
+    }
+
+    .footer-section-contact {
+        justify-self: stretch;
     }
     
     .footer-bottom {

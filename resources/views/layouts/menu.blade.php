@@ -88,7 +88,7 @@
             @endauth
         </div>
 
-        <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-label="Buka menu">
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-label="Buka menu" aria-controls="mobileMenu" aria-expanded="false">
             <i class="fas fa-bars"></i>
         </button>
 
@@ -491,7 +491,7 @@
 
 
 <!-- Mobile Menu -->
-<div class="mobile-menu" id="mobileMenu">
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
     <ul>
         <li>
             <a href="{{ route('home') }}" class="{{ $currentRoute === 'home' ? 'active' : '' }}">
@@ -671,7 +671,9 @@
 
         if (mobileMenuToggle && mobileMenu) {
             mobileMenuToggle.addEventListener('click', function () {
-                mobileMenu.classList.toggle('active');
+                const isActive = mobileMenu.classList.toggle('active');
+                mobileMenuToggle.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+                mobileMenu.setAttribute('aria-hidden', isActive ? 'false' : 'true');
 
                 const icon = this.querySelector('i');
                 if (icon) {
@@ -683,6 +685,8 @@
             mobileMenu.querySelectorAll('a').forEach(function (link) {
                 link.addEventListener('click', function () {
                     mobileMenu.classList.remove('active');
+                    mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                    mobileMenu.setAttribute('aria-hidden', 'true');
 
                     const icon = mobileMenuToggle.querySelector('i');
                     if (icon) {
@@ -690,6 +694,24 @@
                         icon.classList.remove('fa-times');
                     }
                 });
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!mobileMenu.classList.contains('active')) {
+                    return;
+                }
+
+                if (!mobileMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                    mobileMenu.classList.remove('active');
+                    mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                    mobileMenu.setAttribute('aria-hidden', 'true');
+
+                    const icon = mobileMenuToggle.querySelector('i');
+                    if (icon) {
+                        icon.classList.add('fa-bars');
+                        icon.classList.remove('fa-times');
+                    }
+                }
             });
         }
 

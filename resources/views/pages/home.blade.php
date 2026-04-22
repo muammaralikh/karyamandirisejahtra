@@ -2,12 +2,31 @@
 
 @section('title', $title)
 <style>
+    .categories {
+        padding: 60px 0;
+    }
+
+    .categories .container {
+        display: block;
+    }
+
+    .categories-inner {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .categories h2 {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
     .category-grid {
-        display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 220px));
+        display: flex !important;
+        flex-wrap: wrap;
         justify-content: center;
         gap: 22px;
         width: 100%;
+        max-width: 1200px;
         margin: 0 auto;
     }
 
@@ -42,9 +61,15 @@
     }
 
     @media (max-width: 768px) {
+        .categories-inner {
+            width: 100%;
+        }
+
         .category-grid {
+            display: grid !important;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 14px;
+            width: 100%;
             max-width: 520px;
             margin: 0 auto;
         }
@@ -175,20 +200,22 @@ Swal.fire({
 </section>
 <section class="categories">
     <div class="container">
-        <h2>Kategori</h2>
+        <div class="categories-inner">
+            <h2>Kategori</h2>
 
-        <div class="category-grid">
-            @foreach($categories as $category)
-            <a href="{{ route('produk.kategori', $category->id) }}" class="category-card">
+            <div class="category-grid">
+                @foreach($categories as $category)
+                <a href="{{ route('produk.kategori', $category->id) }}" class="category-card">
 
-                <div class="category-image">
-                    <img src="{{ asset('storage/' . $category->gambar) }}" alt="{{ $category->nama }}">
-                </div>
+                    <div class="category-image">
+                        <img src="{{ asset('storage/' . $category->gambar) }}" alt="{{ $category->nama }}">
+                    </div>
 
-                <h3>{{ $category->nama }}</h3>
+                    <h3>{{ $category->nama }}</h3>
 
-            </a>
-            @endforeach
+                </a>
+                @endforeach
+            </div>
         </div>
     </div>
 </section>
@@ -242,20 +269,6 @@ Swal.fire({
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-    const mobileMenu = document.getElementById('mobileMenu');
-
-    if (mobileMenuToggle && mobileMenu) {
-        mobileMenuToggle.addEventListener('click', function() {
-            mobileMenu.classList.toggle('active');
-            this.querySelector('i').classList.toggle('fa-bars');
-            this.querySelector('i').classList.toggle('fa-times');
-        });
-    }
-
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
-
     const cartForms = document.querySelectorAll('.product-form');
     cartForms.forEach(form => {
         form.addEventListener('submit', function(e) {

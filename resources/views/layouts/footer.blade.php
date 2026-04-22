@@ -1,7 +1,7 @@
 <footer class="site-footer">
     <div class="container">
         <div class="footer-grid">
-            <div class="footer-section">
+            <div class="footer-section footer-section-brand">
                 <h3>Toko Online</h3>
                 <p>Karya Mandiri Sejahtera. Menyediakan produk berkualitas dengan harga terbaik.</p>
                 <div class="social-links">
@@ -12,7 +12,7 @@
                     <a href="#"><i class="fab fa-tiktok"></i></a>
                 </div>
             </div>
-            <div class="footer-section">
+            <div class="footer-section footer-section-category">
                 <h3>Kategori</h3>
                 <ul class="footer-links">
                     <li>
@@ -29,7 +29,7 @@
                     @endforeach
                 </ul>
             </div>
-            <div class="footer-section">
+            <div class="footer-section footer-section-contact">
                 <h3>Hubungi Kami</h3>
                 <ul class="contact-info">
                     <li><i class="fas fa-map-marker-alt"></i> Jl. </li>
