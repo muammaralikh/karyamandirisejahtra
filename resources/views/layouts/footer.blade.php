@@ -3,7 +3,10 @@
         <div class="footer-grid">
             <div class="footer-section footer-section-brand">
                 <h3>Toko Online</h3>
-                <p>Karya Mandiri Sejahtera. Menyediakan produk berkualitas dengan harga terbaik.</p>
+                <p>
+                    Karya Mandiri Sejahtera,<br>
+                    Produk Olahan Lokal, Kualitas Maksimal!!.
+                </p>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-facebook"></i></a>
                     <a href="#"><i class="fab fa-instagram"></i></a>
@@ -32,9 +35,9 @@
             <div class="footer-section footer-section-contact">
                 <h3>Hubungi Kami</h3>
                 <ul class="contact-info">
-                    <li><i class="fas fa-map-marker-alt"></i> Jl. </li>
+                    <li><i class="fas fa-map-marker-alt"></i> Desa Dukuhwaluh, Kecamatan Kembaran, Kabupaten Banyumas, Jawa Tengah</li>
                     <li><i class="fas fa-phone"></i> +62 813-1840-9870</li>
-                    <li><i class="fas fa-envelope"></i> kms.dukuhwaluh@gmail.com</li>
+                    <li><i class="fas fa-envelope"></i> karyamandirisejahtera.dkw@gmail.com</li>
                     <li><i class="fas fa-clock"></i> Buka: 08:00 - 22:00 WIB</li>
                 </ul>
             </div>
