@@ -145,14 +145,14 @@
                             
                             <div class="summary-row">
                                 <span>Ongkos Kirim</span>
-                                <span class="free-shipping">Rp 10.000</span>
+                                <span class="free-shipping">Rp {{ number_format($shippingCost, 0, ',', '.') }}</span>
                             </div>
                             
                             <div class="summary-divider"></div>
                             
                             <div class="summary-total">
                                 <span>Total Bayar</span>
-                                <span class="total-amount">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
+                                <span class="total-amount">Rp {{ number_format($grandTotal, 0, ',', '.') }}</span>
                             </div>
                         </div>
                         

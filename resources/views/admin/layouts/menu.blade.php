@@ -46,8 +46,8 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ route('produk.index') }}#stok-produk"
-                class="nav-link {{ ($activeProduk ?? '') == 'produk' ? 'active' : '' }}">
+              <a href="{{ route('produk.stock') }}"
+                class="nav-link {{ ($activeStokProduk ?? '') == 'stok-produk' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-boxes"></i>
                 <p class="text-white">Stok Produk</p>
               </a>

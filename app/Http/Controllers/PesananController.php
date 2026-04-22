@@ -84,59 +84,14 @@ class PesananController extends Controller
     }
     public function exportExcel()
     {
-        $filename = 'laporan-pesanan-' . now()->format('Y-m-d_His') . '.csv';
+        $filename = 'laporan-pesanan-' . now()->format('Y-m-d_His') . '.xls';
+        $orders = Order::with(['items', 'user'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        $headers = [
-            "Content-Type" => "text/csv; charset=UTF-8",
-            "Content-Disposition" => "attachment; filename=$filename",
-        ];
-
-        $callback = function () {
-            $file = fopen('php://output', 'w');
-
-            fputs($file, "\xEF\xBB\xBF");
-            fwrite($file, "sep=;\n");
-
-            $separator = ';';
-
-            fputcsv($file, [
-                'Tanggal',
-                'Nama Pemesan',
-                'Alamat Lengkap',
-                'Daftar Produk',
-                'Total Item',
-                'Total Belanja Produk',
-                'Ongkir',
-                'Total Akhir',
-                'Status Pesanan'
-            ], $separator);
-
-            $orders = Order::with(['items', 'user'])
-                ->orderBy('created_at', 'desc')
-                ->get();
-
-            foreach ($orders as $order) {
-                $alamatLengkap = preg_replace('/\s+/', ' ', $order->shipping_address ?? '-');
-                $daftarProduk = $order->items->map(function ($item) {
-                    return $item->product_name . ' x' . $item->qty;
-                })->implode(', ');
-
-                fputcsv($file, [
-                    $order->created_at->format('d-m-Y'),
-                    $order->user->name ?? '-',
-                    $alamatLengkap,
-                    $daftarProduk ?: '-',
-                    $order->items->sum('qty'),
-                    $order->subtotal,
-                    $order->shipping_cost,
-                    $order->total,
-                    strtoupper($order->status)
-                ], $separator);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return response()
+            ->view('exports.pesanan_excel', compact('orders'))
+            ->header('Content-Type', 'application/vnd.ms-excel; charset=UTF-8')
+            ->header('Content-Disposition', "attachment; filename={$filename}");
     }
 }

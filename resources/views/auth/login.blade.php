@@ -2,7 +2,7 @@
 
 @section('title', 'Login')
 @section('heading', 'Masuk ke Akun')
-@section('subtitle', 'Login user maupun admin sekarang menggunakan email aktif Anda.')
+@section('subtitle', '')
 
 @section('content')
     <form action="{{ route('proses.login') }}" method="POST" class="auth-form">

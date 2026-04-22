@@ -325,20 +325,18 @@
 
                                         <td>
                                             @foreach($order->items as $item)
-                                                <div>{{ $item->qty }}</div>
+                                                <div>{{ $item->qty }} x Rp {{ number_format($item->price, 0, ',', '.') }}</div>
                                             @endforeach
                                         </td>
 
                                         <td>
-                                            @foreach($order->items as $item)
-                                                <div>Rp {{ number_format($item->price, 0, ',', '.') }}</div>
-                                            @endforeach
+                                            Rp {{ number_format($order->product_subtotal, 0, ',', '.') }}
                                         </td>
                                         <td>
                                             Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}
                                         </td>
                                         <td>
-                                            Rp {{ number_format($order->subtotal, 0, ',', '.') }}
+                                            Rp {{ number_format($order->computed_grand_total, 0, ',', '.') }}
                                         </td>
 
                                         <td>{{ $order->recipient_phone }}</td>

@@ -14,6 +14,8 @@ use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
+    private const SHIPPING_COST = 10000;
+
     public function index()
     {
         $user = Auth::user();
@@ -22,16 +24,21 @@ class CheckoutController extends Controller
         if ($cartItems->isEmpty()) {
             return redirect()->route('user.account.cart.index')->with('error', 'Keranjang belanja kosong');
         }
+
         $subtotal = $cartItems->sum(function ($item) {
             return $item->qty * $item->price;
-        }) + 10000;
+        });
+        $shippingCost = self::SHIPPING_COST;
+        $grandTotal = $subtotal + $shippingCost;
         $addresses = $user->addresses()->orderBy('is_primary', 'desc')->get();
         $categories = Kategori::latest()->get();
         return view('cart.checkout', compact(
             'cartItems',
             'categories',
             'subtotal',
-            'addresses'
+            'addresses',
+            'shippingCost',
+            'grandTotal'
         ));
     }
     public function continue($id)
@@ -44,7 +51,9 @@ class CheckoutController extends Controller
         $cartItems = $order->items()->with('product')->get();
         $subtotal = $cartItems->sum(function ($item) {
             return $item->qty * $item->price;
-        }) + 10000;
+        });
+        $shippingCost = self::SHIPPING_COST;
+        $grandTotal = $subtotal + $shippingCost;
         $addresses = $user->addresses()->orderBy('is_primary', 'desc')->get();
         if ($order->status !== 'pending') {
             return redirect()->route('user.orders.detail', $id)
@@ -54,7 +63,9 @@ class CheckoutController extends Controller
         return view('cart.checkout', compact(
             'cartItems',
             'subtotal',
-            'addresses'
+            'addresses',
+            'shippingCost',
+            'grandTotal'
         ));
     }
     public function process(Request $request)
@@ -87,10 +98,21 @@ class CheckoutController extends Controller
 
             $subtotal = $cartItems->sum(function ($item) {
                 return $item->qty * $item->price;
-            }) + 10000;
+            });
+            $shippingCost = self::SHIPPING_COST;
+            $grandTotal = $subtotal + $shippingCost;
             $orderNumber = 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(6));
             $address = Address::findOrFail($request->address_id);
-            $order = DB::transaction(function () use ($user, $request, $cartItems, $subtotal, $orderNumber, $address) {
+            $order = DB::transaction(function () use (
+                $user,
+                $request,
+                $cartItems,
+                $subtotal,
+                $shippingCost,
+                $grandTotal,
+                $orderNumber,
+                $address
+            ) {
                 $lockedItems = Cart::where('user_id', $user->id)
                     ->with(['produk' => function ($query) {
                         $query->lockForUpdate();
@@ -115,8 +137,8 @@ class CheckoutController extends Controller
                     'order_number' => $orderNumber,
                     'status' => 'pending',
                     'subtotal' => $subtotal,
-                    'shipping_cost' => 10000,
-                    'total' => $subtotal,
+                    'shipping_cost' => $shippingCost,
+                    'total' => $grandTotal,
                     'shipping_method' => 'Ongkir',
                     'payment_method' => 'Transfer Bank',
                     'notes' => $request->notes,
@@ -170,7 +192,7 @@ class CheckoutController extends Controller
 
         $message .= "\n*RINGKASAN PEMBAYARAN:*\n";
         $message .= "Subtotal: Rp " . number_format($order->subtotal, 0, ',', '.') . "\n";
-        $message .= "Ongkir: GRATIS\n";
+        $message .= "Ongkir: Rp " . number_format($order->shipping_cost, 0, ',', '.') . "\n";
         $message .= "*Total: Rp " . number_format($order->total, 0, ',', '.') . "*\n\n";
         $message .= "*INFO PENGIRIMAN:*\n";
         $message .= "Nama: {$address->recipient_name}\n";

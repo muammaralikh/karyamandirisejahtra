@@ -143,6 +143,26 @@ class Order extends Model
         return 'Rp ' . number_format($this->shipping_cost, 0, ',', '.');
     }
 
+    // Aksesor untuk total belanja produk tanpa ongkir
+    public function getProductSubtotalAttribute()
+    {
+        if ($this->relationLoaded('items')) {
+            return $this->items->sum(function ($item) {
+                return $item->qty * $item->price;
+            });
+        }
+
+        return $this->items()->get()->sum(function ($item) {
+            return $item->qty * $item->price;
+        });
+    }
+
+    // Aksesor untuk total akhir hasil hitung ulang subtotal + ongkir
+    public function getComputedGrandTotalAttribute()
+    {
+        return $this->product_subtotal + $this->shipping_cost;
+    }
+
     // Method untuk cek apakah order bisa dibatalkan
     public function canBeCancelled()
     {

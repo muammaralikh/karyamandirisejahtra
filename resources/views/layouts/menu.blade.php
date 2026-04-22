@@ -15,7 +15,7 @@
             <ul class="nav-list">
                 <li><a href="{{ route('home') }}" class="{{ $currentRoute === 'home' ? 'active' : '' }}">Beranda</a></li>
                 <li><a href="{{ route('produk.showall') }}" class="{{ $currentRoute === 'produk.showall' ? 'active' : '' }}">Produk</a></li>
-                <li><a href="{{ route('about') }}" class="{{ $currentRoute === 'about' ? 'active' : '' }}">Tentang</a></li>
+                <li><a href="{{ route('about') }}" class="{{ $currentRoute === 'about' ? 'active' : '' }}">Tentang Kami</a></li>
             </ul>
         </nav>
 
@@ -61,17 +61,60 @@
         </button>
 
         <style>
+            .site-header {
+                padding: 18px 0;
+            }
+
+            .site-header .container.header-flex {
+                max-width: 1380px;
+                padding-left: 16px;
+                padding-right: 16px;
+                min-height: 92px;
+                display: grid;
+                grid-template-columns: 1fr auto 1fr;
+                align-items: center;
+                gap: 24px;
+            }
+
+            .logo {
+                justify-self: start;
+            }
+
+            .logo img {
+                height: 58px;
+                width: auto;
+                max-width: none;
+            }
+
+            .main-nav {
+                justify-self: center;
+                flex: initial;
+            }
+
+            .nav-list {
+                gap: 42px;
+            }
+
+            .nav-list a {
+                font-size: 1.08rem;
+                font-weight: 600;
+                padding: 10px 0;
+            }
+
             .header-right {
                 display: flex;
                 align-items: center;
-                gap: 20px;
+                justify-self: end;
+                justify-content: flex-end;
+                margin-left: auto;
+                gap: 22px;
             }
 
             .icon-search {
                 color: #555;
-                font-size: 1.2rem;
+                font-size: 1.45rem;
                 transition: color 0.3s;
-                padding: 8px;
+                padding: 10px;
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
@@ -88,12 +131,12 @@
                 align-items: center;
                 color: #555;
                 text-decoration: none;
-                padding: 8px 15px;
-                border-radius: 20px;
+                padding: 12px 20px;
+                border-radius: 24px;
                 transition: all 0.3s;
                 position: relative;
                 background: #f8f9fa;
-                gap: 8px;
+                gap: 10px;
             }
 
             .cart-link:hover {
@@ -103,7 +146,7 @@
             }
 
             .cart-text {
-                font-size: 0.9rem;
+                font-size: 1rem;
                 font-weight: 500;
             }
 
@@ -113,10 +156,10 @@
                 right: -8px;
                 background: #ff5722;
                 color: white;
-                font-size: 0.7rem;
+                font-size: 0.74rem;
                 font-weight: bold;
-                min-width: 18px;
-                height: 18px;
+                min-width: 20px;
+                height: 20px;
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
@@ -131,12 +174,13 @@
                 gap: 8px;
                 background: #4CAF50;
                 color: white;
-                padding: 8px 20px;
-                border-radius: 20px;
+                padding: 12px 22px;
+                border-radius: 24px;
                 text-decoration: none;
-                font-weight: 500;
-                font-size: 0.9rem;
+                font-weight: 600;
+                font-size: 1rem;
                 transition: all 0.3s;
+                letter-spacing: 0.01em;
             }
 
             .akun-link:hover {
@@ -146,7 +190,7 @@
             }
 
             .akun-link i {
-                font-size: 0.9rem;
+                font-size: 1rem;
             }
 
             .mobile-menu-toggle {
@@ -157,13 +201,22 @@
 
             /* Responsive */
             @media (max-width: 768px) {
-                .site-header .container {
+                .site-header {
+                    padding: 12px 0;
+                }
+
+                .site-header .container.header-flex {
+                    display: flex;
                     gap: 12px;
+                    min-height: auto;
+                    padding-left: 14px;
+                    padding-right: 14px;
                 }
 
                 .header-right {
                     gap: 10px;
                     margin-left: auto;
+                    justify-self: auto;
                 }
 
                 .cart-text {
@@ -203,7 +256,7 @@
 
             @media (max-width: 576px) {
                 .logo img {
-                    height: 38px;
+                    height: 44px;
                 }
 
                 .header-right {

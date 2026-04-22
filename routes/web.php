@@ -41,6 +41,7 @@ Route::post('/cart/add', [HomeController::class, 'addToCart'])->name('cart.add')
 
 // Route Produk
 Route::get('/produk', [ProdukController::class, 'index'])->name('produk.index');
+Route::get('/stok-produk', [ProdukController::class, 'stock'])->name('produk.stock');
 Route::post('/store-produk', [ProdukController::class, 'store'])->name('produk.store');
 Route::put('/update-produk-{id}', [ProdukController::class, 'update'])
     ->name('produk.update');

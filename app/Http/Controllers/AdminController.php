@@ -20,6 +20,7 @@ class AdminController extends Controller
     }
     public function index()
     {
+        $now = Carbon::now();
         $totalProduk = Produk::count();
         $totalKategori = Kategori::count();
         $totalUser = User::count();
@@ -27,18 +28,27 @@ class AdminController extends Controller
         $totalPendapatan = Order::where('status', 'completed')->sum('total');
 
         $currentMonthRevenue = Order::where('status', 'completed')
-            ->whereYear('created_at', Carbon::now()->year)
-            ->whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', $now->year)
+            ->whereMonth('created_at', $now->month)
             ->sum('total');
 
+        $previousMonth = $now->copy()->subMonth();
         $previousMonthRevenue = Order::where('status', 'completed')
-            ->whereYear('created_at', Carbon::now()->subMonth()->year)
-            ->whereMonth('created_at', Carbon::now()->subMonth()->month)
+            ->whereYear('created_at', $previousMonth->year)
+            ->whereMonth('created_at', $previousMonth->month)
             ->sum('total');
+
+        $chartMonths = 6;
+        $chartStepSize = 25000;
+        $startDate = $now->copy()->startOfYear();
+        $endDate = $startDate->copy()->addMonths($chartMonths);
+        $chartPeriodLabel = $startDate->locale('id')->isoFormat('MMMM')
+            . ' - '
+            . $endDate->copy()->subMonth()->locale('id')->isoFormat('MMMM YYYY');
 
         $salesQuery = Order::where('status', 'completed')
-            ->where('created_at', '>=', Carbon::parse('2026-01-01')->startOfMonth())
-            ->where('created_at', '<', Carbon::parse('2026-01-01')->addYear()->startOfMonth())
+            ->where('created_at', '>=', $startDate)
+            ->where('created_at', '<', $endDate)
             ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(total) as total')
             ->groupBy('year', 'month')
             ->orderBy('year')
@@ -51,9 +61,8 @@ class AdminController extends Controller
 
         $chartLabels = [];
         $chartData = [];
-        $startDate = Carbon::parse('2026-01-01');
 
-        for ($i = 0; $i < 12; $i++) {
+        for ($i = 0; $i < $chartMonths; $i++) {
             $date = $startDate->copy()->addMonths($i);
             $label = $date->locale('id')->isoFormat('MMMM YYYY');
             $key = $date->year . '-' . $date->month;
@@ -74,6 +83,9 @@ class AdminController extends Controller
                 'previousMonthRevenue' => $previousMonthRevenue,
                 'chartLabels' => $chartLabels,
                 'chartData' => $chartData,
+                'chartMonths' => $chartMonths,
+                'chartStepSize' => $chartStepSize,
+                'chartPeriodLabel' => $chartPeriodLabel,
             ], $this->setActive('dashboard'), $this->setActive('dashboard'))
         );
     }

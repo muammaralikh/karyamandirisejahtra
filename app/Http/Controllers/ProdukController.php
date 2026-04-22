@@ -11,7 +11,8 @@ class ProdukController extends Controller
     private function setActive($page)
     {
         return [
-            'activeProduk' => $page,
+            'activeProduk' => $page === 'produk' ? 'produk' : '',
+            'activeStokProduk' => $page === 'stok-produk' ? 'stok-produk' : '',
             'produkActive' => true,
         ];
     }
@@ -27,9 +28,15 @@ class ProdukController extends Controller
 
         $produk = $query->paginate(10)->withQueryString();
         $kategoris = Kategori::all();
+
+        return view('admin.pages.produk', compact('produk', 'kategoris'), $this->setActive('produk'));
+    }
+
+    public function stock()
+    {
         $stockProduk = Produk::with('kategori')->orderBy('nama')->get();
 
-        return view('admin.pages.produk', compact('produk', 'kategoris', 'stockProduk'), $this->setActive('produk'));
+        return view('admin.pages.stok-produk', compact('stockProduk'), $this->setActive('stok-produk'));
     }
     public function showall()
     {

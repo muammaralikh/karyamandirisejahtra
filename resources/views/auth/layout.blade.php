@@ -51,15 +51,29 @@
             box-shadow: 0 24px 60px rgba(22, 51, 44, 0.14);
         }
 
+        .auth-brand {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+
+        .auth-brand img {
+            height: 58px;
+            width: auto;
+            display: block;
+        }
+
         .auth-card h2 {
             margin: 0 0 8px;
             font-size: 2rem;
+            text-align: center;
         }
 
         .auth-card > p {
             margin: 0 0 28px;
             color: var(--auth-muted);
             line-height: 1.5;
+            text-align: center;
         }
 
         .auth-form {
@@ -180,8 +194,16 @@
 <body>
     <div class="auth-shell">
         <main class="auth-card">
+            <div class="auth-brand">
+                <img src="{{ asset('logo/logo.kms.jpg.jpeg') }}" alt="Logo KMS">
+            </div>
             <h2>@yield('heading')</h2>
-            <p>@yield('subtitle')</p>
+            @hasSection('subtitle')
+                @php($subtitle = trim($__env->yieldContent('subtitle')))
+                @if($subtitle !== '')
+                    <p>{{ $subtitle }}</p>
+                @endif
+            @endif
 
             @if (session('success'))
                 <div class="flash success">{{ session('success') }}</div>

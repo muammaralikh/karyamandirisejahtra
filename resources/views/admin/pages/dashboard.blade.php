@@ -553,7 +553,7 @@
                                 <h3>Grafik Pendapatan Bulanan</h3>
                                 <p style="margin:0; color:#4f6b53; opacity:0.85; font-size:0.95rem;">Tiap titik menunjukkan pendapatan untuk bulan tersebut. Arah garis menunjukkan naik/turun dibanding bulan sebelumnya.</p>
                             </div>
-                            <span>Data 12 bulan terakhir</span>
+                            <span>Periode {{ $chartPeriodLabel }}</span>
                         </div>
                         <canvas id="monthlySalesChart" class="chart-canvas"></canvas>
                         <div class="chart-notes">
@@ -631,10 +631,16 @@
     // Monthly sales chart
     const monthlySalesLabels = @json($chartLabels);
     const monthlySalesData = @json($chartData);
+    const monthlySalesStepSize = {{ $chartStepSize }};
     const monthlySalesTrend = monthlySalesData.map((value, index, array) => {
         if (index === 0) return 'flat';
         return value >= array[index - 1] ? 'up' : 'down';
     });
+    const monthlySalesMax = Math.max(...monthlySalesData, 0);
+    const monthlySalesSuggestedMax = Math.max(
+        monthlySalesStepSize,
+        Math.ceil(monthlySalesMax / monthlySalesStepSize) * monthlySalesStepSize
+    );
 
     const monthlySalesCtx = document.getElementById('monthlySalesChart').getContext('2d');
     const gradient = monthlySalesCtx.createLinearGradient(0, 0, 0, 400);
@@ -689,12 +695,13 @@
                 },
                 y: {
                     beginAtZero: true,
+                    suggestedMax: monthlySalesSuggestedMax,
                     grid: {
                         color: 'rgba(45, 106, 79, 0.08)',
                         borderDash: [4, 4]
                     },
                     ticks: {
-                        stepSize: 10000,
+                        stepSize: monthlySalesStepSize,
                         color: '#2d6a4f',
                         callback: function(value) {
                             return 'Rp ' + value.toLocaleString('id-ID');

@@ -3,627 +3,378 @@
 @section('title', 'Tentang Kami - ' . config('app.name'))
 
 @section('content')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @if(session('success'))
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: '{{ session('success') }}',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        </script>
-    @endif
-
-    @if(session('error'))
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal',
-                text: '{{ session('error') }}'
-            });
-        </script>
-    @endif
-
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --light-color: #f8f9fa;
-            --dark-color: #2c3e50;
-            --text-color: #333;
-            --text-light: #666;
-            --border-color: #e0e0e0;
-            --shadow: 0 5px 15px rgba(0,0,0,0.08);
-            --transition: all 0.3s ease;
+            --about-green-900: #1f5a33;
+            --about-green-800: #2f7a47;
+            --about-green-700: #3d9856;
+            --about-green-100: #eef8f0;
+            --about-green-050: #f7fcf8;
+            --about-text: #1f2d1f;
+            --about-text-soft: #4f6651;
+            --about-border: #d7eadb;
+            --about-shadow: 0 12px 32px rgba(31, 90, 51, 0.12);
         }
-        
+
+        .about-page {
+            background: linear-gradient(180deg, #fbfefb 0%, #f3f9f4 100%);
+            color: var(--about-text);
+        }
+
         .about-hero {
-            background: linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.9) 100%);
-            color: white;
-            padding: 100px 0 80px;
-            text-align: center;
             position: relative;
             overflow: hidden;
+            background: linear-gradient(135deg, rgba(31, 90, 51, 0.96) 0%, rgba(61, 152, 86, 0.92) 100%);
+            color: #fff;
+            padding: 92px 0 88px;
         }
-        
+
         .about-hero::before {
             content: '';
             position: absolute;
-            top: 0;
+            inset: 0;
+            background:
+                radial-gradient(circle at top left, rgba(255, 255, 255, 0.16), transparent 32%),
+                radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.14), transparent 30%);
+        }
+
+        .about-hero::after {
+            content: '';
+            position: absolute;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,138.7C672,128,768,160,864,165.3C960,171,1056,149,1152,138.7C1248,128,1344,128,1392,128L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
-            background-repeat: no-repeat;
-            background-position: bottom;
-            background-size: cover;
+            bottom: -1px;
+            height: 120px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 200'%3E%3Cpath fill='%23f7fcf8' d='M0,128L80,144C160,160,320,192,480,181.3C640,171,800,117,960,106.7C1120,96,1280,128,1360,144L1440,160L1440,201L1360,201C1280,201,1120,201,960,201C800,201,640,201,480,201C320,201,160,201,80,201L0,201Z'/%3E%3C/svg%3E") bottom center / cover no-repeat;
         }
-        
+
         .about-hero-content {
             position: relative;
             z-index: 1;
+            max-width: 860px;
+            margin: 0 auto;
+            text-align: center;
         }
-        
+
+        .about-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            padding: 8px 16px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.14);
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
         .about-hero h1 {
+            margin-bottom: 18px;
             font-size: 3.2rem;
             font-weight: 700;
-            margin-bottom: 20px;
-            color: white;
+            color: #fff;
         }
-        
+
         .about-hero p {
-            font-size: 1.2rem;
-            color: rgba(255,255,255,0.9);
-            max-width: 600px;
-            margin: 0 auto 30px;
+            margin: 0 auto;
+            max-width: 760px;
+            font-size: 1.18rem;
+            line-height: 1.9;
+            color: rgba(255, 255, 255, 0.92);
         }
-        
+
         .about-section {
-            padding: 80px 0;
+            padding: 72px 0;
         }
-        
-        .section-title {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            position: relative;
-            padding-bottom: 15px;
-            color: var(--primary-color);
+
+        .about-card {
+            background: #fff;
+            border: 1px solid rgba(61, 152, 86, 0.14);
+            border-radius: 26px;
+            box-shadow: var(--about-shadow);
+            padding: 38px 42px;
         }
-        
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 4px;
-            background-color: var(--secondary-color);
-        }
-        
-        .section-title.center {
-            text-align: center;
-        }
-        
-        .section-title.center::after {
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        .section-subtitle {
-            font-size: 1.1rem;
-            color: var(--text-light);
-            margin-bottom: 50px;
-            max-width: 700px;
-        }
-        
-        .story-img {
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            transition: var(--transition);
-        }
-        
-        .story-img:hover {
-            transform: translateY(-10px);
-        }
-        
-        .story-img img {
-            width: 100%;
-            height: auto;
-        }
-        
-        .story-content {
-            padding-left: 40px;
-        }
-        
-        .highlight-box {
-            background: linear-gradient(135deg, var(--secondary-color), #2980b9);
-            color: white;
-            padding: 40px;
-            border-radius: 10px;
-            margin: 40px 0;
-            box-shadow: var(--shadow);
-        }
-        
-        .highlight-box h3 {
-            color: white;
-            margin-bottom: 15px;
-        }
-        
-        .value-card {
-            background: white;
-            padding: 40px 30px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            height: 100%;
-        }
-        
-        .value-card:hover {
-            transform: translateY(-10px);
-        }
-        
-        .value-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--secondary-color), #2980b9);
-            border-radius: 50%;
+
+        .section-heading {
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin: 0 auto 25px;
+            gap: 14px;
+            margin-bottom: 22px;
         }
-        
-        .value-icon i {
-            font-size: 2rem;
-            color: white;
-        }
-        
-        .team-section {
-            background-color: var(--light-color);
-        }
-        
-        .team-card {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            margin-bottom: 30px;
-        }
-        
-        .team-card:hover {
-            transform: translateY(-10px);
-        }
-        
-        .team-img {
-            height: 280px;
-            overflow: hidden;
-        }
-        
-        .team-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
-        
-        .team-card:hover .team-img img {
-            transform: scale(1.05);
-        }
-        
-        .team-info {
-            padding: 25px;
-        }
-        
-        .team-name {
-            font-size: 1.3rem;
-            margin-bottom: 5px;
-        }
-        
-        .team-role {
-            color: var(--secondary-color);
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-        
-        .team-social {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .team-social a {
-            width: 36px;
+
+        .section-marker {
+            width: 6px;
             height: 36px;
-            border-radius: 50%;
-            background-color: var(--light-color);
+            border-radius: 999px;
+            background: linear-gradient(180deg, var(--about-green-700), var(--about-green-900));
+        }
+
+        .section-heading h2 {
+            margin: 0;
+            font-size: 2.35rem;
+            color: var(--about-green-900);
+        }
+
+        .profile-copy p {
+            margin-bottom: 24px;
+            font-size: 1.1rem;
+            line-height: 1.95;
+            color: var(--about-text);
+        }
+
+        .vision-mission-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.2fr);
+            gap: 28px;
+            align-items: stretch;
+        }
+
+        .vision-panel,
+        .mission-panel {
+            height: 100%;
+        }
+
+        .vision-panel {
+            background: linear-gradient(180deg, #f3fbf4 0%, #e7f7ea 100%);
+            border: 1px solid var(--about-border);
+            border-radius: 24px;
+            padding: 34px 32px;
+        }
+
+        .vision-title,
+        .mission-title {
             display: flex;
             align-items: center;
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+
+        .vision-icon,
+        .mission-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
             justify-content: center;
-            color: var(--primary-color);
-            transition: var(--transition);
+            font-size: 1.5rem;
+            flex-shrink: 0;
         }
-        
-        .team-social a:hover {
-            background-color: var(--secondary-color);
-            color: white;
+
+        .vision-icon {
+            background: rgba(61, 152, 86, 0.14);
+            color: var(--about-green-900);
         }
-        
-        .stats-section {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #1a252f 100%);
-            color: white;
+
+        .mission-icon {
+            background: rgba(47, 122, 71, 0.1);
+            color: var(--about-green-800);
         }
-        
-        .stats-section .section-title {
-            color: white;
+
+        .vision-title h3,
+        .mission-title h3 {
+            margin: 0;
+            font-size: 2rem;
+            color: var(--about-green-900);
         }
-        
-        .stats-section .section-title::after {
-            background-color: var(--secondary-color);
-        }
-        
-        .stat-item {
-            text-align: center;
-            padding: 30px;
-        }
-        
-        .stat-number {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--secondary-color);
-            margin-bottom: 10px;
-        }
-        
-        .cta-section {
-            background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)), url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            text-align: center;
-        }
-        
-        .cta-section .section-title {
-            color: white;
-        }
-        
-        .cta-section .section-title::after {
-            background-color: var(--secondary-color);
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        .btn-cta {
-            background-color: var(--secondary-color);
-            color: white;
-            padding: 12px 40px;
-            border-radius: 50px;
+
+        .vision-quote {
+            margin: 0;
+            font-size: 1.05rem;
+            line-height: 1.9;
+            color: #27452e;
+            font-style: italic;
             font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-            transition: var(--transition);
-            border: 2px solid var(--secondary-color);
-            margin-top: 20px;
         }
-        
-        .btn-cta:hover {
-            background-color: transparent;
-            color: var(--secondary-color);
+
+        .mission-panel {
+            padding: 10px 6px;
         }
-        
+
+        .mission-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 18px;
+        }
+
+        .mission-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            font-size: 1.06rem;
+            line-height: 1.75;
+            color: var(--about-text);
+        }
+
+        .mission-list li i {
+            color: var(--about-green-700);
+            margin-top: 5px;
+            font-size: 1rem;
+        }
+
+        .closing-box {
+            margin-top: 34px;
+            padding: 26px 28px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, rgba(61, 152, 86, 0.1), rgba(31, 90, 51, 0.12));
+            border: 1px solid rgba(61, 152, 86, 0.16);
+        }
+
+        .closing-box p {
+            margin: 0;
+            font-size: 1.02rem;
+            line-height: 1.85;
+            color: var(--about-text-soft);
+        }
+
         @media (max-width: 991px) {
             .about-hero h1 {
-                font-size: 2.5rem;
+                font-size: 2.6rem;
             }
-            
-            .story-content {
-                padding-left: 0;
-                margin-top: 40px;
-            }
-            
-            .section-title {
+
+            .section-heading h2 {
                 font-size: 2rem;
             }
+
+            .vision-mission-grid {
+                grid-template-columns: 1fr;
+            }
         }
-        
+
         @media (max-width: 768px) {
             .about-hero {
-                padding: 80px 0 60px;
+                padding: 80px 0 78px;
             }
-            
+
             .about-hero h1 {
-                font-size: 2rem;
+                font-size: 2.15rem;
             }
-            
+
+            .about-hero p {
+                font-size: 1rem;
+                line-height: 1.8;
+            }
+
             .about-section {
-                padding: 60px 0;
+                padding: 56px 0;
             }
-            
-            .value-card {
-                margin-bottom: 30px;
+
+            .about-card {
+                padding: 28px 22px;
+                border-radius: 22px;
             }
-            
-            .stat-number {
-                font-size: 2.5rem;
+
+            .section-heading h2 {
+                font-size: 1.72rem;
             }
-        }
-        
-        @media (max-width: 576px) {
-            .about-hero h1 {
-                font-size: 1.8rem;
+
+            .vision-title h3,
+            .mission-title h3 {
+                font-size: 1.6rem;
             }
-            
-            .section-title {
-                font-size: 1.7rem;
-            }
-            
-            .highlight-box {
-                padding: 30px 20px;
-            }
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .animate-fade-in {
-            animation: fadeInUp 0.8s ease-out;
-        }
-        
-        .delay-1 {
-            animation-delay: 0.2s;
-        }
-        
-        .delay-2 {
-            animation-delay: 0.4s;
-        }
-        
-        .delay-3 {
-            animation-delay: 0.6s;
         }
     </style>
 
-    <!-- Hero Section -->
-    <section class="about-hero">
-        <div class="container">
-            <div class="about-hero-content animate-fade-in">
-                <h1>Tentang Kami</h1>
-                <p>
-                    Kami adalah perusahaan yang berdedikasi untuk memberikan pengalaman berbelanja terbaik 
-                    dengan produk berkualitas tinggi dan layanan pelanggan yang luar biasa.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    
-
-    <!-- Mission & Vision -->
-    <section class="about-section" style="background-color: #f8f9fa;">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6 mb-5 mb-lg-0 animate-fade-in">
-                    <div class="highlight-box">
-                        <div class="d-flex align-items-center mb-4">
-                            <div class="value-icon me-3">
-                                <i class="fas fa-bullseye"></i>
-                            </div>
-                            <h3 class="mb-0">Misi Kami</h3>
-                        </div>
-                        <p>
-                            Menyediakan produk berkualitas tinggi dengan harga terjangkau, 
-                            memberikan pengalaman belanja yang mudah dan menyenangkan, 
-                            serta membangun hubungan jangka panjang dengan pelanggan melalui 
-                            layanan yang luar biasa dan inovasi berkelanjutan.
-                        </p>
+    <div class="about-page">
+        <section class="about-hero">
+            <div class="container">
+                <div class="about-hero-content">
+                    <div class="about-badge">
+                        <i class="fas fa-leaf"></i>
+                        <span>Karya Mandiri Sejahtera</span>
                     </div>
-                </div>
-                <div class="col-lg-6 animate-fade-in delay-1">
-                    <div class="highlight-box">
-                        <div class="d-flex align-items-center mb-4">
-                            <div class="value-icon me-3">
-                                <i class="fas fa-eye"></i>
-                            </div>
-                            <h3 class="mb-0">Visi Kami</h3>
-                        </div>
-                        <p>
-                            Menjadi platform e-commerce terdepan di Indonesia yang dikenal 
-                            karena kualitas produk, keandalan layanan, dan komitmen terhadap 
-                            kepuasan pelanggan. Kami bertekad untuk terus berinovasi dan 
-                            memberikan nilai terbaik bagi semua stakeholder.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Values Section -->
-    <section class="about-section">
-        <div class="container">
-            <h2 class="section-title center">Nilai-Nilai Kami</h2>
-            <p class="section-subtitle center mx-auto">
-                Prinsip-prinsip yang menjadi pedoman dalam setiap keputusan dan tindakan kami
-            </p>
-            
-            <div class="row">
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="value-card animate-fade-in">
-                        <div class="value-icon">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <h4>Integritas</h4>
-                        <p>
-                            Kami berkomitmen untuk selalu jujur dan transparan dalam setiap aspek bisnis, 
-                            menjaga kepercayaan yang diberikan oleh pelanggan dan mitra.
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="value-card animate-fade-in delay-1">
-                        <div class="value-icon">
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <h4>Kualitas</h4>
-                        <p>
-                            Tidak ada kompromi untuk kualitas. Setiap produk yang kami tawarkan melalui 
-                            proses seleksi ketat untuk memastikan kepuasan pelanggan.
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="value-card animate-fade-in delay-2">
-                        <div class="value-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h4>Kepuasan Pelanggan</h4>
-                        <p>
-                            Pelanggan adalah prioritas utama. Kami selalu berusaha melebihi ekspektasi 
-                            melalui layanan yang responsif dan solusi yang tepat.
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="value-card animate-fade-in">
-                        <div class="value-icon">
-                            <i class="fas fa-lightbulb"></i>
-                        </div>
-                        <h4>Inovasi</h4>
-                        <p>
-                            Terus berinovasi dalam produk, layanan, dan teknologi untuk memberikan 
-                            pengalaman belanja yang lebih baik dan efisien.
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="value-card animate-fade-in delay-1">
-                        <div class="value-icon">
-                            <i class="fas fa-handshake"></i>
-                        </div>
-                        <h4>Kolaborasi</h4>
-                        <p>
-                            Kami percaya kekuatan kerjasama, baik dengan tim internal, mitra, 
-                            maupun pelanggan untuk mencapai hasil yang optimal.
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="value-card animate-fade-in delay-2">
-                        <div class="value-icon">
-                            <i class="fas fa-leaf"></i>
-                        </div>
-                        <h4>Keberlanjutan</h4>
-                        <p>
-                            Berkomitmen untuk praktik bisnis yang ramah lingkungan dan 
-                            memberikan dampak positif bagi komunitas.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="about-section cta-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto text-center">
-                    <h2 class="section-title center">Siap Bergabung dengan Kami?</h2>
-                    <p class="lead mb-4">
-                        Jadilah bagian dari komunitas pelanggan yang puas. 
-                        Temukan produk terbaik dengan layanan yang luar biasa.
+                    <h1>Tentang Kami</h1>
+                    <p>
+                        KMS hadir sebagai wadah pemberdayaan ekonomi masyarakat Desa Dukuhwaluh
+                        yang tumbuh dari semangat gotong royong, kemandirian usaha, dan pengembangan
+                        potensi lokal secara berkelanjutan.
                     </p>
-                    <a href="{{ route('produk.showall') }}" class="btn-cta">
-                        <i class="fas fa-shopping-cart me-2"></i> Mulai Belanja
-                    </a>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <section class="about-section">
+            <div class="container">
+                <div class="about-card">
+                    <div class="section-heading">
+                        <span class="section-marker"></span>
+                        <h2>Profil Singkat</h2>
+                    </div>
+
+                    <div class="profile-copy">
+                        <p>
+                            Kelompok Usaha Bersama (KUB) Karya Mandiri Sejahtera (KMS) adalah wadah
+                            pemberdayaan ekonomi masyarakat yang berpusat di Desa Dukuhwaluh, Kecamatan
+                            Kembaran, Kabupaten Banyumas, berdiri sejak 2023 berdasarkan SK Kepala Desa
+                            Dukuhwaluh No. 14 Thun 2023.
+                        </p>
+                        <p>
+                            Didirikan oleh masyarakat Desa Dukuhwaluh yang memiliki semangat gotong royong
+                            dan visi kemandirian ekonomi, KMS bergerak di sektor pertanian, peternakan,
+                            perikanan, dan pengolahan hasil pertanian, dengan komoditas unggulan labu
+                            kuning (waluh) sebagai ikon desa. KMS juga mengembangkan pendekatan integrated
+                            farming yang berkelanjutan untuk meningkatkan produktivitas dan kesejahteraan
+                            anggotanya.
+                        </p>
+                    </div>
+
+                    <div class="vision-mission-grid">
+                        <div class="vision-panel">
+                            <div class="vision-title">
+                                <span class="vision-icon">
+                                    <i class="fas fa-eye"></i>
+                                </span>
+                                <h3>Visi Kami</h3>
+                            </div>
+                            <p class="vision-quote">
+                                "Mewujudkan masyarakat Desa Dukuhwaluh yang mandiri, sejahtera, dan
+                                berdaya saing melalui pengembangan usaha berbasis potensi lokal."
+                            </p>
+                        </div>
+
+                        <div class="mission-panel">
+                            <div class="mission-title">
+                                <span class="mission-icon">
+                                    <i class="fas fa-rocket"></i>
+                                </span>
+                                <h3>Misi Kami</h3>
+                            </div>
+                            <ul class="mission-list">
+                                <li>
+                                    <i class="fas fa-check"></i>
+                                    <span>Mendorong kemandirian ekonomi anggota melalui unit usaha kolektif.</span>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check"></i>
+                                    <span>Mengelola sumber daya alam desa secara produktif dan berkelanjutan.</span>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check"></i>
+                                    <span>Mengembangkan produk unggulan desa, khususnya labu kuning dan hasil olahannya.</span>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check"></i>
+                                    <span>Menjadi pusat edukasi pertanian terpadu (integrated farming) di tingkat desa.</span>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check"></i>
+                                    <span>Menjalin kemitraan strategis dengan pemerintah dan swasta.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="closing-box">
+                        <p>
+                            Dengan semangat kebersamaan dan penguatan ekonomi lokal, KMS berupaya menjadi
+                            penggerak usaha desa yang tidak hanya menghasilkan produk unggulan, tetapi juga
+                            membuka peluang tumbuh bagi masyarakat sekitar secara nyata dan berkelanjutan.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 @endsection
-
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Mobile menu toggle (sesuaikan dengan layout.app Anda)
-            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-            const mobileMenu = document.getElementById('mobileMenu');
-
-            if (mobileMenuToggle && mobileMenu) {
-                mobileMenuToggle.addEventListener('click', function () {
-                    mobileMenu.classList.toggle('active');
-                    const icon = this.querySelector('i');
-                    if (icon) {
-                        icon.classList.toggle('fa-bars');
-                        icon.classList.toggle('fa-times');
-                    }
-                });
-            }
-
-            // Smooth scroll untuk anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    
-                    const targetId = this.getAttribute('href');
-                    if(targetId === '#') return;
-                    
-                    const targetElement = document.querySelector(targetId);
-                    if(targetElement) {
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 80,
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
-
-            // Scroll animation untuk cards
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if(entry.isIntersecting) {
-                        entry.target.classList.add('animate-fade-in');
-                    }
-                });
-            }, observerOptions);
-            
-            // Observe elements untuk animation
-            document.querySelectorAll('.value-card, .team-card, .stat-item').forEach(el => {
-                observer.observe(el);
-            });
-
-            // Auto-hide success message
-            const successMessage = document.querySelector('.alert-success');
-            if (successMessage) {
-                setTimeout(() => {
-                    successMessage.style.transition = 'opacity 0.5s';
-                    successMessage.style.opacity = '0';
-                    setTimeout(() => {
-                        successMessage.remove();
-                    }, 500);
-                }, 5000);
-            }
-        });
-    </script>
-@endpush
