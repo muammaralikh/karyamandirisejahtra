@@ -703,15 +703,20 @@ body {
 }
 
 .footer-grid {
-    display: grid;
-    grid-template-columns: minmax(260px, 1fr) minmax(220px, 1fr) max-content;
+    display: flex;
+    flex-wrap: nowrap;
     gap: 40px;
     margin-bottom: 40px;
     align-items: start;
 }
 
+.footer-section-brand,
+.footer-section-category {
+    flex: 0 1 320px;
+}
+
 .footer-section-contact {
-    justify-self: end;
+    flex: 0 0 auto;
     text-align: left;
     width: max-content;
     margin-left: auto;
@@ -948,11 +953,12 @@ body {
     }
     
     .footer-grid {
+        display: grid;
         grid-template-columns: 1fr;
     }
 
     .footer-section-contact {
-        justify-self: stretch;
+        flex: initial;
         width: auto;
         margin-left: 0;
     }
