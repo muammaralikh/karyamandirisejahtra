@@ -39,5 +39,9 @@
                 </ul>
             </div>
         </div>
+
+        <div class="footer-bottom">
+            <p class="footer-copyright">&copy; {{ date('Y') }} Karya Mandiri Sejahtera. All rights reserved.</p>
+        </div>
     </div>
 </footer>
