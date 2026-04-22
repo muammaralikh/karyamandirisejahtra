@@ -2,6 +2,7 @@
     $currentRoute = Route::currentRouteName();
     $searchKeyword = request('search', '');
     $searchOpen = $currentRoute === 'produk.showall' && $searchKeyword !== '';
+    $kategoriActive = $currentRoute === 'produk.kategori';
 @endphp
 
 <header class="site-header">
@@ -16,6 +17,21 @@
             <ul class="nav-list">
                 <li><a href="{{ route('home') }}" class="{{ $currentRoute === 'home' ? 'active' : '' }}">Beranda</a></li>
                 <li><a href="{{ route('produk.showall') }}" class="{{ $currentRoute === 'produk.showall' ? 'active' : '' }}">Produk</a></li>
+                <li class="nav-dropdown">
+                    <button type="button" class="nav-dropdown-toggle {{ $kategoriActive ? 'active' : '' }}">
+                        Kategori Produk
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="nav-dropdown-menu">
+                        @forelse($navbarCategories ?? [] as $navbarCategory)
+                            <a href="{{ route('produk.kategori', $navbarCategory->id) }}" class="nav-dropdown-item">
+                                {{ $navbarCategory->nama }}
+                            </a>
+                        @empty
+                            <span class="nav-dropdown-empty">Belum ada kategori</span>
+                        @endforelse
+                    </div>
+                </li>
                 <li><a href="{{ route('about') }}" class="{{ $currentRoute === 'about' ? 'active' : '' }}">Tentang Kami</a></li>
             </ul>
         </nav>
@@ -62,12 +78,12 @@
             @auth
                 <a href="{{ route('user.account.my-account') }}" class="akun-link">
                     <i class="fas fa-user"></i>
-                    AKUN SAYA
+                    <span class="akun-link-label">AKUN SAYA</span>
                 </a>
             @else
                 <a href="{{ route('login') }}" class="akun-link">
                     <i class="fas fa-user"></i>
-                    AKUN SAYA
+                    <span class="akun-link-label">AKUN SAYA</span>
                 </a>
             @endauth
         </div>
@@ -109,12 +125,93 @@
 
             .nav-list {
                 gap: 42px;
+                align-items: center;
             }
 
-            .nav-list a {
+            .nav-list a,
+            .nav-dropdown-toggle {
                 font-size: 1.08rem;
                 font-weight: 600;
                 padding: 10px 0;
+                color: #333;
+                text-decoration: none;
+                background: transparent;
+                border: 0;
+                white-space: nowrap;
+            }
+
+            .nav-dropdown {
+                position: relative;
+                display: flex;
+                align-items: center;
+            }
+
+            .nav-dropdown-toggle {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+            }
+
+            .nav-dropdown-toggle i {
+                font-size: 0.8rem;
+                transition: transform 0.2s ease;
+            }
+
+            .nav-dropdown:hover .nav-dropdown-toggle i,
+            .nav-dropdown:focus-within .nav-dropdown-toggle i {
+                transform: rotate(180deg);
+            }
+
+            .nav-dropdown-toggle.active,
+            .nav-dropdown-toggle:hover {
+                color: #2a9d8f;
+            }
+
+            .nav-dropdown-menu {
+                position: absolute;
+                top: calc(100% + 14px);
+                left: 50%;
+                transform: translateX(-50%);
+                min-width: 240px;
+                padding: 10px;
+                background: #fff;
+                border: 1px solid rgba(76, 175, 80, 0.16);
+                border-top: 4px solid #4CAF50;
+                border-radius: 18px;
+                box-shadow: 0 18px 36px rgba(22, 51, 44, 0.14);
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                transition: opacity 0.22s ease, visibility 0.22s ease, transform 0.22s ease;
+                z-index: 20;
+            }
+
+            .nav-dropdown:hover .nav-dropdown-menu,
+            .nav-dropdown:focus-within .nav-dropdown-menu {
+                opacity: 1;
+                visibility: visible;
+                pointer-events: auto;
+            }
+
+            .nav-dropdown-item,
+            .nav-dropdown-empty {
+                display: block;
+                padding: 12px 14px;
+                border-radius: 12px;
+                font-size: 0.98rem;
+                color: #30443a;
+                text-decoration: none;
+            }
+
+            .nav-dropdown-item:hover {
+                background: rgba(76, 175, 80, 0.08);
+                color: #2f7a47;
+            }
+
+            .nav-dropdown-empty {
+                color: #7b8a84;
+                cursor: default;
             }
 
             .header-right {
@@ -278,6 +375,11 @@
                 font-size: 1rem;
             }
 
+            .akun-link-label {
+                display: inline-block;
+                white-space: nowrap;
+            }
+
             .mobile-menu-toggle {
                 border: 0;
                 background: transparent;
@@ -318,16 +420,23 @@
                     display: none;
                 }
 
-                .akun-link span {
+                .akun-link-label {
                     display: none;
                 }
 
                 .akun-link {
-                    padding: 8px;
-                    width: 40px;
-                    height: 40px;
+                    padding: 0;
+                    width: 44px;
+                    height: 44px;
                     justify-content: center;
                     border-radius: 50%;
+                    flex-shrink: 0;
+                    box-shadow: 0 8px 18px rgba(76, 175, 80, 0.22);
+                }
+
+                .akun-link i {
+                    font-size: 1.02rem;
+                    margin: 0;
                 }
 
                 .cart-link {
@@ -362,8 +471,8 @@
                 .cart-link,
                 .akun-link,
                 .mobile-menu-toggle {
-                    width: 38px;
-                    height: 38px;
+                    width: 40px;
+                    height: 40px;
                 }
 
                 .search-box.active .search-form {
@@ -390,6 +499,20 @@
                 <i class="fas fa-store"></i>
                 Produk
             </a>
+        </li>
+        <li class="mobile-menu-group">
+            <div class="mobile-menu-category-title">
+                <i class="fas fa-layer-group"></i>
+                Kategori Produk
+            </div>
+            @forelse($navbarCategories ?? [] as $navbarCategory)
+                <a href="{{ route('produk.kategori', $navbarCategory->id) }}" class="mobile-submenu-link {{ $kategoriActive && request()->route('id') == $navbarCategory->id ? 'active' : '' }}">
+                    <i class="fas fa-chevron-right"></i>
+                    {{ $navbarCategory->nama }}
+                </a>
+            @empty
+                <span class="mobile-submenu-empty">Belum ada kategori</span>
+            @endforelse
         </li>
         <li>
             <a href="{{ route('about') }}" class="{{ $currentRoute === 'about' ? 'active' : '' }}">
@@ -423,6 +546,42 @@
         </li>
     </ul>
 </div>
+
+<style>
+    .mobile-menu-group {
+        margin: 8px 0 14px;
+    }
+
+    .mobile-menu-category-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 15px 6px;
+        font-weight: 700;
+        color: #31533a;
+    }
+
+    .mobile-submenu-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-left: 14px;
+        padding-left: 14px;
+    }
+
+    .mobile-submenu-link i {
+        width: 16px !important;
+        margin-right: 0 !important;
+        font-size: 0.78rem;
+    }
+
+    .mobile-submenu-empty {
+        display: block;
+        padding: 8px 15px 8px 29px;
+        color: #7b8a84;
+        font-size: 0.92rem;
+    }
+</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

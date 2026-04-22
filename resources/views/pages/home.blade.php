@@ -2,45 +2,138 @@
 
 @section('title', $title)
 <style>
-.category-grid {
-    display: flex !important;
-    justify-content: center !important;
-    /* Kunci agar ke tengah */
-    gap: 20px;
-    flex-wrap: wrap;
-    width: 100%;
-    /* Pastikan container full width */
-}
+    .category-grid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 220px));
+        justify-content: center;
+        gap: 22px;
+        width: 100%;
+    }
 
-.category-card {
-    /* Berikan lebar pasti agar kartu tidak kekecilan/kebesaran */
-    width: 200px;
-    /* Sisa style Anda biarkan sama */
-    text-decoration: none;
-    color: #000;
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease;
-}
+    .category-card {
+        width: 220px;
+        text-decoration: none;
+        color: #1f2d1f;
+        background: #fff;
+        border-radius: 18px;
+        overflow: hidden;
+        text-align: center;
+        box-shadow: 0 8px 24px rgba(21, 58, 32, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-.category-card:hover {
-    transform: translateY(-5px);
-}
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 28px rgba(21, 58, 32, 0.14);
+    }
 
-.category-image img {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-}
+    .category-image img {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+    }
 
-.category-card h3 {
-    padding: 10px;
-    font-size: 16px;
-    font-weight: 600;
-}
+    .category-card h3 {
+        padding: 16px 14px 18px;
+        font-size: 1.32rem;
+        font-weight: 700;
+        line-height: 1.35;
+    }
+
+    @media (max-width: 768px) {
+        .category-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .category-card {
+            width: 100%;
+            border-radius: 16px;
+        }
+
+        .category-image img {
+            height: 128px;
+        }
+
+        .category-card h3 {
+            padding: 12px 10px 14px;
+            font-size: 1rem;
+        }
+
+        .featured-products .product-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .featured-products .product-card {
+            border-radius: 16px;
+        }
+
+        .featured-products .product-image {
+            height: 128px;
+        }
+
+        .featured-products .product-info {
+            padding: 14px 12px;
+        }
+
+        .featured-products .product-category,
+        .featured-products .product-stock,
+        .featured-products .product-desc {
+            font-size: 0.82rem;
+        }
+
+        .featured-products .product-info h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            line-height: 1.35;
+        }
+
+        .featured-products .product-price {
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
+
+        .featured-products .btn-cart {
+            min-height: 40px;
+            font-size: 0.82rem;
+            padding: 9px 10px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .featured-products .product-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .featured-products .product-image {
+            height: 112px;
+        }
+
+        .featured-products .product-info {
+            padding: 12px 10px;
+        }
+
+        .featured-products .product-category,
+        .featured-products .product-stock,
+        .featured-products .product-desc {
+            font-size: 0.78rem;
+        }
+
+        .featured-products .product-info h3 {
+            font-size: 0.94rem;
+        }
+
+        .featured-products .product-price {
+            font-size: 1rem;
+        }
+
+        .featured-products .btn-cart {
+            font-size: 0.76rem;
+            gap: 4px;
+        }
+    }
 </style>
 @section('content')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
