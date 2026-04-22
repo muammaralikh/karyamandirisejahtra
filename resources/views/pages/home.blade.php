@@ -194,7 +194,7 @@ Swal.fire({
 @endif
 <section class="hero">
     <div class="hero-content">
-        <h1>Lele Premium, <br> Diolah Istimewa Untuk Keluarga Anda</h1>
+        <h1>Karya Mandiri Sejahtera, <br> Produk Olahan Lokal, Kualitas Maksimal!!</h1>
         <a href="#produk" class="btn-primary">Lihat Semua Produk</a>
     </div>
 </section>
