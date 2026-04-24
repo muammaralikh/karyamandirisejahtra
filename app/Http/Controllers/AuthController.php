@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -44,13 +45,14 @@ class AuthController extends Controller
             'remember' => 'nullable|boolean',
         ]);
 
+        $user = User::where('email', $request->email)->first();
+
         if (
-            Auth::attempt([
-                'email' => $request->email,
-                'password' => $request->password,
-                'status' => 'Aktif',
-            ], $request->boolean('remember'))
+            $user &&
+            Hash::check($request->password, $user->password) &&
+            $this->canUserLogin($user)
         ) {
+            Auth::login($user, $request->boolean('remember'));
             $request->session()->regenerate();
 
             return match (strtolower((string) Auth::user()->role)) {
@@ -174,6 +176,21 @@ class AuthController extends Controller
         }
 
         return $username;
+    }
+
+    private function canUserLogin(User $user): bool
+    {
+        if (!Schema::hasColumn($user->getTable(), 'status')) {
+            return true;
+        }
+
+        $status = trim((string) $user->status);
+
+        if ($status === '') {
+            return true;
+        }
+
+        return strcasecmp($status, 'Aktif') === 0;
     }
 
     private function translatePasswordStatus(string $status): string
