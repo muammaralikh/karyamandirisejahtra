@@ -92,7 +92,7 @@ class ProdukController extends Controller
 
         return back()->with('success', 'Produk berhasil ditambahkan');
     }
-    public function update(Request $request, Produk $produk, $id)
+    public function update(Request $request, $id)
     {
         $produk = Produk::where('id', $id)->firstOrFail();
         $request->validate([

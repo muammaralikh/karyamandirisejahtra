@@ -14,9 +14,8 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PesananController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/produk', [ProdukController::class, 'index'])->name('produk.index');
 Route::get('/produk/{id}', [HomeController::class, 'showProduk'])->name('produk.show');
-Route::get('/kategori', [HomeController::class, 'kategori'])->name('kategori');
+Route::get('/kategori-list', [HomeController::class, 'kategori'])->name('kategori');
 Route::get('/promo', [HomeController::class, 'promo'])->name('promo');
 Route::get('/tentang', [HomeController::class, 'tentang'])->name('tentang');
 Route::get('/kontak', [HomeController::class, 'kontak'])->name('kontak');

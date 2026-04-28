@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Models\Produk;
 use App\Models\Kategori;
 use Illuminate\Support\Facades\Storage;
 class KategoriController extends Controller
@@ -18,14 +17,14 @@ class KategoriController extends Controller
     }
     public function index(Request $request)
     {
-        $query = Kategori::all();
+        $query = Kategori::query();
         if ($request->search) {
             $query->where('nama', 'like', '%' . $request->search . '%');
         }
         
-        $kategoris = Kategori::all();
+        $kategoris = $query->get();
 
-        return view('admin.pages.kategori', compact( 'kategoris'), $this->setActive('kategori'));
+        return view('admin.pages.kategori', compact('kategoris'), $this->setActive('kategori'));
     }
 
     public function store(Request $request)
@@ -48,25 +47,25 @@ class KategoriController extends Controller
 
         return back()->with('success', 'Kategori berhasil ditambahkan');
     }
-    public function update(Request $request, Produk $produk, $id)
+    public function update(Request $request, $id)
     {
-        $produk = Kategori::where('id', $id)->firstOrFail();
+        $kategori = Kategori::where('id', $id)->firstOrFail();
         $request->validate([
             'nama' => 'required',
             'gambar' => 'nullable|image|max:2048'
         ]);
-        $produk->update([
+        $kategori->update([
             'nama' => $request->nama,
         ]);
 
         if ($request->hasFile('gambar')) {
-            if ($produk->gambar && Storage::disk('public')->exists('kategori/' . $produk->gambar)) {
-                Storage::disk('public')->delete('kategori/' . $produk->gambar);
+            if ($kategori->gambar && Storage::disk('public')->exists('kategori/' . $kategori->gambar)) {
+                Storage::disk('public')->delete('kategori/' . $kategori->gambar);
             }
             $file = $request->file('gambar');
             $namaFile = time() . '_' . $file->getClientOriginalName();
             Storage::disk('public')->putFileAs('kategori', $file, $namaFile);
-            $produk->update(['gambar' => $namaFile]);
+            $kategori->update(['gambar' => $namaFile]);
         }
 
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil diupdate');
