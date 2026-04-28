@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Produk;
 use App\Models\Kategori;
+use Illuminate\Support\Facades\Storage;
 class KategoriController extends Controller
 {
     private function setActive($page)
@@ -31,12 +32,13 @@ class KategoriController extends Controller
     {
         $request->validate([
             'nama' => 'required',
+            'gambar' => 'nullable|image|max:2048',
         ]);
         $namaFile = null;
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $namaFile = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('storage'), $namaFile);
+            Storage::disk('public')->putFileAs('kategori', $file, $namaFile);
         }
         Kategori::create([
             'id' => 'K-' . strtoupper(Str::random(6)),
@@ -51,19 +53,19 @@ class KategoriController extends Controller
         $produk = Kategori::where('id', $id)->firstOrFail();
         $request->validate([
             'nama' => 'required',
-            'gambar' => 'nullable|max:2048'
+            'gambar' => 'nullable|image|max:2048'
         ]);
         $produk->update([
             'nama' => $request->nama,
         ]);
 
         if ($request->hasFile('gambar')) {
-            if ($produk->gambar && file_exists(public_path('storage/' . $produk->gambar))) {
-                unlink(public_path('storage/' . $produk->gambar));
+            if ($produk->gambar && Storage::disk('public')->exists('kategori/' . $produk->gambar)) {
+                Storage::disk('public')->delete('kategori/' . $produk->gambar);
             }
             $file = $request->file('gambar');
             $namaFile = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('storage'), $namaFile);
+            Storage::disk('public')->putFileAs('kategori', $file, $namaFile);
             $produk->update(['gambar' => $namaFile]);
         }
 
@@ -72,8 +74,8 @@ class KategoriController extends Controller
     public function destroy($id)
     {
         $kategori = Kategori::where('id', $id)->firstOrFail();
-        if ($kategori->gambar && file_exists(public_path('storage/' . $kategori->gambar))) {
-            unlink(public_path('storage/' . $kategori->gambar));
+        if ($kategori->gambar && Storage::disk('public')->exists('kategori/' . $kategori->gambar)) {
+            Storage::disk('public')->delete('kategori/' . $kategori->gambar);
         }
         $kategori->delete();
 

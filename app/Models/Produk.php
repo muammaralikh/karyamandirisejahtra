@@ -4,13 +4,12 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Model;
 use App\Models\Kategori;
 
-class Produk extends Authenticatable
+class Produk extends Model
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
     protected $table = 'produk';
     protected $primaryKey = 'id';
     public $incrementing = false;

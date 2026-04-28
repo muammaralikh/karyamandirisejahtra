@@ -40,38 +40,47 @@ Route::get('/cart', [HomeController::class, 'cart'])->name('cart');
 Route::post('/cart/add', [HomeController::class, 'addToCart'])->name('cart.add');
 
 // Route Produk
-Route::get('/produk', [ProdukController::class, 'index'])->name('produk.index');
-Route::get('/stok-produk', [ProdukController::class, 'stock'])->name('produk.stock');
-Route::post('/store-produk', [ProdukController::class, 'store'])->name('produk.store');
-Route::put('/update-produk-{id}', [ProdukController::class, 'update'])
-    ->name('produk.update');
-Route::delete('/destroy-produk-{id}', [ProdukController::class, 'destroy'])
-    ->name('produk.destroy');
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/produk', [ProdukController::class, 'index'])->name('produk.index');
+    Route::get('/stok-produk', [ProdukController::class, 'stock'])->name('produk.stock');
+    Route::post('/store-produk', [ProdukController::class, 'store'])->name('produk.store');
+    Route::put('/update-produk-{id}', [ProdukController::class, 'update'])
+        ->name('produk.update');
+    Route::delete('/destroy-produk-{id}', [ProdukController::class, 'destroy'])
+        ->name('produk.destroy');
+});
 Route::get('/produk-showall', [ProdukController::class, 'showall'])->name('produk.showall');
 
 // Route Kategori
-Route::get('/kategori', [KategoriController::class, 'index'])->name('kategori.index');
-Route::post('/store-kategori', [KategoriController::class, 'store'])->name('kategori.store');
-Route::put('/update-kategori-{id}', [KategoriController::class, 'update'])
-    ->name('kategori.update');
-Route::delete('/destroy-kategori-{id}', [KategoriController::class, 'destroy'])
-    ->name('kategori.destroy');
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/kategori', [KategoriController::class, 'index'])->name('kategori.index');
+    Route::post('/store-kategori', [KategoriController::class, 'store'])->name('kategori.store');
+    Route::put('/update-kategori-{id}', [KategoriController::class, 'update'])
+        ->name('kategori.update');
+    Route::delete('/destroy-kategori-{id}', [KategoriController::class, 'destroy'])
+        ->name('kategori.destroy');
+});
 
 // Route Pesanan
-Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
-Route::put('/update-pesanan-{id}', [PesananController::class, 'update'])
-    ->name('pesanan.update');
-
-Route::delete('/destroy-pesanan-{id}', [PesananController::class, 'destroy'])
-    ->name('pesanan.destroy');
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
+    Route::put('/update-pesanan-{id}', [PesananController::class, 'update'])
+        ->name('pesanan.update');
+    Route::delete('/destroy-pesanan-{id}', [PesananController::class, 'destroy'])
+        ->name('pesanan.destroy');
+    Route::get('/export/excel', [PesananController::class, 'exportExcel'])
+        ->name('pesanan.export.excel');
+});
 
 // Route Daftar User
-Route::get('/daftar-user', [UserController::class, 'daftar'])->name('daftar-user.index');
-Route::put('/update-daftar-user-{id}', [UserController::class, 'update'])
-    ->name('daftar-user-update.index');
-Route::delete('/destroy-daftar-user-{id}', [UserController::class, 'destroy'])
-    ->name('daftar-user.destroy');
-Route::post('/store-user', [UserController::class, 'store'])->name('daftar-user.store');
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/daftar-user', [UserController::class, 'daftar'])->name('daftar-user.index');
+    Route::put('/update-daftar-user-{id}', [UserController::class, 'update'])
+        ->name('daftar-user-update.index');
+    Route::delete('/destroy-daftar-user-{id}', [UserController::class, 'destroy'])
+        ->name('daftar-user.destroy');
+    Route::post('/store-user', [UserController::class, 'store'])->name('daftar-user.store');
+});
 
 // Route Tentang
 use App\Models\Kategori;
@@ -131,5 +140,3 @@ Route::prefix('api')->group(function () {
     Route::get('/districts/{cityId}', [RegionController::class, 'getDistricts']);
     Route::get('/regions/search', [RegionController::class, 'search']);
 });
-Route::get('/export/excel', [PesananController::class, 'exportExcel'])
-    ->name('pesanan.export.excel');

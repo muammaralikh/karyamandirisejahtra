@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use App\Models\Produk;
 
-class Kategori extends Authenticatable
+class Kategori extends Model
 {
     protected $table = 'kategori';
     protected $primaryKey = 'id';

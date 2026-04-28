@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Produk;
 use App\Models\Kategori;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 class ProdukController extends Controller
 {
     private function setActive($page)
@@ -70,13 +71,13 @@ class ProdukController extends Controller
             'harga' => 'required|numeric',
             'stok' => 'required|integer|min:0',
             'deskripsi' => 'required',
-            'gambar' => 'nullable|max:2048',
+            'gambar' => 'nullable|image|max:2048',
         ]);
         $namaFile = null;
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $namaFile = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('storage'), $namaFile);
+            Storage::disk('public')->putFileAs('produk', $file, $namaFile);
         }
 
         Produk::create([
@@ -100,7 +101,7 @@ class ProdukController extends Controller
             'harga' => 'required|numeric',
             'stok' => 'required|integer|min:0',
             'deskripsi' => 'nullable|string',
-            'gambar' => 'nullable|max:2048',
+            'gambar' => 'nullable|image|max:2048',
         ]);
         $produk->update([
             'kategori_id' => $request->kategori_id,
@@ -110,12 +111,13 @@ class ProdukController extends Controller
             'stok' => $request->stok,
         ]);
         if ($request->hasFile('gambar')) {
-            if ($produk->gambar && file_exists(public_path('storage/' . $produk->gambar))) {
-                unlink(public_path('storage/' . $produk->gambar));
+            // Delete old file if exists
+            if ($produk->gambar && Storage::disk('public')->exists('produk/' . $produk->gambar)) {
+                Storage::disk('public')->delete('produk/' . $produk->gambar);
             }
             $file = $request->file('gambar');
             $namaFile = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('storage'), $namaFile);
+            Storage::disk('public')->putFileAs('produk', $file, $namaFile);
             $produk->update(['gambar' => $namaFile]);
         }
 
@@ -124,8 +126,8 @@ class ProdukController extends Controller
     public function destroy($id)
     {
         $produk = Produk::where('id', $id)->firstOrFail();
-        if ($produk->gambar && file_exists(public_path('storage/' . $produk->gambar))) {
-            unlink(public_path('storage/' . $produk->gambar));
+        if ($produk->gambar && Storage::disk('public')->exists('produk/' . $produk->gambar)) {
+            Storage::disk('public')->delete('produk/' . $produk->gambar);
         }
         $produk->delete();
 
