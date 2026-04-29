@@ -38,8 +38,11 @@ Route::post('/reset-password', [AuthController::class, 'proses_reset_password'])
 Route::get('/cart', [HomeController::class, 'cart'])->name('cart');
 Route::post('/cart/add', [HomeController::class, 'addToCart'])->name('cart.add');
 
-// Route Produk
+// Route Admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'index'])
+        ->name('admin.dashboard');
+
     Route::get('/produk', [ProdukController::class, 'index'])->name('produk.index');
     Route::get('/stok-produk', [ProdukController::class, 'stock'])->name('produk.stock');
     Route::post('/store-produk', [ProdukController::class, 'store'])->name('produk.store');
@@ -90,12 +93,6 @@ Route::get('/tentang-kami', function () {
         'categories' => Kategori::latest()->get(),
     ]);
 })->name('about');
-
-// Route Admin
-
-Route::get('/dashboard', [AdminController::class, 'index'])
-    ->name('admin.dashboard');
-
 
 // Route User
 Route::middleware(['auth', 'role:user'])

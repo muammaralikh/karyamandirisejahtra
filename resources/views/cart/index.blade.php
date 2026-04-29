@@ -48,7 +48,7 @@
                         @foreach($cartItems as $item)
                             <div class="cart-item" id="cart-item-{{ $item->id }}">
                                 <div class="cart-item-product">
-                                    <img src="{{ asset('storage/' . $item->produk->gambar) }}" alt="{{ $item->produk->nama }}"
+                                    <img src="{{ $item->produk->gambar_url }}" alt="{{ $item->produk->nama }}"
                                         class="cart-item-image">
                                     <div class="cart-item-info">
                                         <h4 class="cart-item-name">{{ $item->produk->nama }}</h4>

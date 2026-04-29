@@ -94,7 +94,7 @@ class OrderItem extends Model
     public function getProductImageAttribute()
     {
         if ($this->product && $this->product->gambar) {
-            return asset('storage/' . $this->product->gambar);
+            return $this->product->gambar_url;
         }
         
         return asset('assets/images/product-default.jpg');

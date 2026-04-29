@@ -7,8 +7,12 @@ use App\Models\Produk;
 use App\Models\Kategori;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+
 class ProdukController extends Controller
 {
+    private const PRODUK_IMAGE_DIRECTORY = 'produk';
+
     private function setActive($page)
     {
         return [
@@ -17,6 +21,59 @@ class ProdukController extends Controller
             'produkActive' => true,
         ];
     }
+
+    private function storeProductImage($file): string
+    {
+        $namaFile = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs(self::PRODUK_IMAGE_DIRECTORY, $namaFile, 'public');
+
+        $this->syncPublicStorageFile($path);
+
+        return $path;
+    }
+
+    private function deleteProductImage(?string $gambar): void
+    {
+        $gambar = trim((string) $gambar);
+
+        if ($gambar === '' || str_starts_with($gambar, 'http://') || str_starts_with($gambar, 'https://')) {
+            return;
+        }
+
+        $path = str_starts_with($gambar, self::PRODUK_IMAGE_DIRECTORY . '/')
+            ? $gambar
+            : self::PRODUK_IMAGE_DIRECTORY . '/' . ltrim($gambar, '/');
+
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
+
+        $this->deletePublicStorageFile($path);
+        $this->deletePublicStorageFile(basename($path));
+    }
+
+    private function syncPublicStorageFile(string $path): void
+    {
+        $source = storage_path('app/public/' . $path);
+        $destination = public_path('storage/' . $path);
+
+        if (! File::exists($source)) {
+            return;
+        }
+
+        File::ensureDirectoryExists(dirname($destination));
+        File::copy($source, $destination);
+    }
+
+    private function deletePublicStorageFile(string $relativePath): void
+    {
+        $target = public_path('storage/' . ltrim($relativePath, '/'));
+
+        if (File::exists($target)) {
+            File::delete($target);
+        }
+    }
+
     public function index(Request $request)
     {
         $query = Produk::with('kategori');
@@ -73,11 +130,11 @@ class ProdukController extends Controller
             'deskripsi' => 'required',
             'gambar' => 'nullable|image|max:2048',
         ]);
-        $namaFile = null;
+
+        $gambarPath = null;
+
         if ($request->hasFile('gambar')) {
-            $file = $request->file('gambar');
-            $namaFile = time() . '_' . $file->getClientOriginalName();
-            Storage::disk('public')->putFileAs('produk', $file, $namaFile);
+            $gambarPath = $this->storeProductImage($request->file('gambar'));
         }
 
         Produk::create([
@@ -87,7 +144,7 @@ class ProdukController extends Controller
             'deskripsi' => $request->deskripsi,
             'harga' => $request->harga,
             'stok' => $request->stok,
-            'gambar' => $namaFile,
+            'gambar' => $gambarPath,
         ]);
 
         return back()->with('success', 'Produk berhasil ditambahkan');
@@ -111,14 +168,11 @@ class ProdukController extends Controller
             'stok' => $request->stok,
         ]);
         if ($request->hasFile('gambar')) {
-            // Delete old file if exists
-            if ($produk->gambar && Storage::disk('public')->exists('produk/' . $produk->gambar)) {
-                Storage::disk('public')->delete('produk/' . $produk->gambar);
-            }
-            $file = $request->file('gambar');
-            $namaFile = time() . '_' . $file->getClientOriginalName();
-            Storage::disk('public')->putFileAs('produk', $file, $namaFile);
-            $produk->update(['gambar' => $namaFile]);
+            $this->deleteProductImage($produk->gambar);
+
+            $produk->update([
+                'gambar' => $this->storeProductImage($request->file('gambar')),
+            ]);
         }
 
         return redirect()->route('produk.index')->with('success', 'Produk berhasil diupdate');
@@ -126,9 +180,9 @@ class ProdukController extends Controller
     public function destroy($id)
     {
         $produk = Produk::where('id', $id)->firstOrFail();
-        if ($produk->gambar && Storage::disk('public')->exists('produk/' . $produk->gambar)) {
-            Storage::disk('public')->delete('produk/' . $produk->gambar);
-        }
+
+        $this->deleteProductImage($produk->gambar);
+
         $produk->delete();
 
         return redirect()->route('produk.index')->with('success', 'Produk berhasil dihapus.');

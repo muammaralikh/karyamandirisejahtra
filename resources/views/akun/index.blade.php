@@ -451,10 +451,6 @@
                         <i class="fas fa-shopping-bag"></i>
                         <span>Riwayat Pesanan</span>
                     </a>
-                    <a href="#" class="menu-item" data-tab="stock">
-                        <i class="fas fa-boxes"></i>
-                        <span>Stok Produk</span>
-                    </a>
                     <a href="#" class="menu-item" data-tab="password">
                         <i class="fas fa-key"></i>
                         <span>Ubah Password</span>
@@ -805,62 +801,6 @@
                             </a>
                         </div>
                     @endif
-                </div>
-
-                <!-- Tab: Stock -->
-                <div id="tab-stock" class="tab-content">
-                    <div class="tab-header">
-                        <h2 class="tab-title">Stok Produk</h2>
-                        <p class="tab-subtitle">Data stok ini sinkron dengan produk yang tampil di web</p>
-                    </div>
-
-                    <div class="stock-overview">
-                        <div class="stock-overview-card">
-                            <span>Total Produk</span>
-                            <strong>{{ $stockProducts->count() }}</strong>
-                        </div>
-                        <div class="stock-overview-card">
-                            <span>Tersedia</span>
-                            <strong>{{ $stockProducts->where('stok', '>', 0)->count() }}</strong>
-                        </div>
-                        <div class="stock-overview-card">
-                            <span>Habis</span>
-                            <strong>{{ $stockProducts->where('stok', '<=', 0)->count() }}</strong>
-                        </div>
-                    </div>
-
-                    <div class="stock-table-wrapper">
-                        <table class="stock-table">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Produk</th>
-                                    <th>Kategori</th>
-                                    <th>Stok</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($stockProducts as $product)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $product->nama }}</td>
-                                        <td>{{ $product->kategori->nama ?? '-' }}</td>
-                                        <td>{{ $product->stok ?? 0 }}</td>
-                                        <td>
-                                            <span class="stock-badge {{ ($product->stok ?? 0) > 0 ? 'in-stock' : 'out-stock' }}">
-                                                {{ ($product->stok ?? 0) > 0 ? 'Tersedia' : 'Habis' }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="stock-empty">Belum ada data stok produk.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
 
                 <!-- Tab: Password -->

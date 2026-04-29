@@ -308,7 +308,7 @@
                                         </td>
                                         <td class="text-center">
                                             @if($kategori->gambar)
-                                                <img src="{{ asset('storage/' . $kategori->gambar) }}" 
+                                                <img src="{{ $kategori->gambar_url }}" 
                                                      class="img-thumbnail-sm" 
                                                      alt="{{ $kategori->nama }}"
                                                      title="{{ $kategori->nama }}">
@@ -468,7 +468,7 @@
                             <div class="form-group">
                                 <label>Gambar Saat Ini</label>
                                 <div class="mt-2">
-                                    <img src="{{ asset('storage/' . $kategori->gambar) }}" 
+                                    <img src="{{ $kategori->gambar_url }}" 
                                          class="preview-image" 
                                          alt="{{ $kategori->nama }}">
                                 </div>

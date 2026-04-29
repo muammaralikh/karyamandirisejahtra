@@ -23,7 +23,7 @@
                             Semua Produk
                         </a>
                     </li>
-                    @foreach($categories as $category)
+                    @foreach($footerCategories as $category)
                         <li>
                             <a href="{{ route('produk.kategori', $category->id) }}">
                                 {{ $category->nama }}

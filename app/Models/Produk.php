@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 class Produk extends Model
 {
     use HasFactory;
+
     protected $table = 'produk';
     protected $primaryKey = 'id';
     public $incrementing = false;
@@ -91,5 +92,38 @@ class Produk extends Model
         return $this;
     }
 
+    public function getGambarUrlAttribute(): string
+    {
+        $gambar = trim((string) $this->gambar);
+
+        if ($gambar === '') {
+            $placeholder = rawurlencode(
+                "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 480 320'>
+                    <rect width='480' height='320' fill='#f1f5f3'/>
+                    <path d='M120 232l74-88 54 64 40-48 72 72H120z' fill='#c7d8cd'/>
+                    <circle cx='187' cy='124' r='28' fill='#c7d8cd'/>
+                    <text x='50%' y='86%' text-anchor='middle' font-size='24' fill='#6b7c72' font-family='Arial, sans-serif'>
+                        Gambar belum tersedia
+                    </text>
+                </svg>"
+            );
+
+            return "data:image/svg+xml;charset=UTF-8,{$placeholder}";
+        }
+
+        if (str_starts_with($gambar, 'http://') || str_starts_with($gambar, 'https://')) {
+            return $gambar;
+        }
+
+        if (str_starts_with($gambar, 'storage/')) {
+            return asset($gambar);
+        }
+
+        if (str_starts_with($gambar, 'produk/')) {
+            return asset('storage/' . $gambar);
+        }
+
+        return asset('storage/produk/' . $gambar);
+    }
 
 }

@@ -221,7 +221,7 @@
                                         <td>{{ ($produk->currentPage() - 1) * $produk->perPage() + $loop->iteration }}</td>
                                         <td>
                                             @if($p->gambar)
-                                                <img src="{{ asset('storage/' . $p->gambar) }}" class="img-thumbnail-sm" alt="{{ $p->nama }}">
+                                                <img src="{{ $p->gambar_url }}" class="img-thumbnail-sm" alt="{{ $p->nama }}">
                                             @else
                                                 <div class="img-thumbnail-sm bg-light d-flex align-items-center justify-content-center">
                                                     <i class="fas fa-image text-muted"></i>
@@ -440,7 +440,7 @@
                             <div class="form-group">
                                 <label>Gambar Saat Ini</label>
                                 <div>
-                                    <img src="{{ asset('storage/' . $p->gambar) }}" width="100" class="img-thumbnail">
+                                    <img src="{{ $p->gambar_url }}" width="100" class="img-thumbnail">
                                 </div>
                             </div>
                         @endif

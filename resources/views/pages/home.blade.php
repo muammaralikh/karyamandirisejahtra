@@ -208,7 +208,7 @@ Swal.fire({
                 <a href="{{ route('produk.kategori', $category->id) }}" class="category-card">
 
                     <div class="category-image">
-                        <img src="{{ asset('storage/' . $category->gambar) }}" alt="{{ $category->nama }}">
+                        <img src="{{ $category->gambar_url }}" alt="{{ $category->nama }}">
                     </div>
 
                     <h3>{{ $category->nama }}</h3>
@@ -227,10 +227,10 @@ Swal.fire({
             <a href="{{ route('produk.showall') }}" class="view-all">Lihat Semua <i class="fas fa-arrow-right"></i></a>
         </div>
         <div class="product-grid">
-            @foreach($featuredProducts as $product)
+                @foreach($featuredProducts as $product)
             <div class="product-card">
                 <div class="product-image">
-                    <img src="{{ asset('storage/' . $product->gambar) }}" alt="{{ $product['nama'] }}">
+                    <img src="{{ $product->gambar_url }}" alt="{{ $product['nama'] }}">
                 </div>
                 <div class="product-info">
                     <span class="product-category">{{ $product->kategori->nama }}</span>

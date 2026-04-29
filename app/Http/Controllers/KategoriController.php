@@ -6,8 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Kategori;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+
 class KategoriController extends Controller
 {
+    private const KATEGORI_IMAGE_DIRECTORY = 'kategori';
+
     private function setActive($page)
     {
         return [
@@ -15,6 +19,59 @@ class KategoriController extends Controller
             'kategoriActive' => true,
         ];
     }
+
+    private function storeKategoriImage($file): string
+    {
+        $namaFile = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs(self::KATEGORI_IMAGE_DIRECTORY, $namaFile, 'public');
+
+        $this->syncPublicStorageFile($path);
+
+        return $path;
+    }
+
+    private function deleteKategoriImage(?string $gambar): void
+    {
+        $gambar = trim((string) $gambar);
+
+        if ($gambar === '' || str_starts_with($gambar, 'http://') || str_starts_with($gambar, 'https://')) {
+            return;
+        }
+
+        $path = str_starts_with($gambar, self::KATEGORI_IMAGE_DIRECTORY . '/')
+            ? $gambar
+            : self::KATEGORI_IMAGE_DIRECTORY . '/' . ltrim($gambar, '/');
+
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
+
+        $this->deletePublicStorageFile($path);
+        $this->deletePublicStorageFile(basename($path));
+    }
+
+    private function syncPublicStorageFile(string $path): void
+    {
+        $source = storage_path('app/public/' . $path);
+        $destination = public_path('storage/' . $path);
+
+        if (! File::exists($source)) {
+            return;
+        }
+
+        File::ensureDirectoryExists(dirname($destination));
+        File::copy($source, $destination);
+    }
+
+    private function deletePublicStorageFile(string $relativePath): void
+    {
+        $target = public_path('storage/' . ltrim($relativePath, '/'));
+
+        if (File::exists($target)) {
+            File::delete($target);
+        }
+    }
+
     public function index(Request $request)
     {
         $query = Kategori::query();
@@ -33,16 +90,15 @@ class KategoriController extends Controller
             'nama' => 'required',
             'gambar' => 'nullable|image|max:2048',
         ]);
-        $namaFile = null;
+        $gambarPath = null;
+
         if ($request->hasFile('gambar')) {
-            $file = $request->file('gambar');
-            $namaFile = time() . '_' . $file->getClientOriginalName();
-            Storage::disk('public')->putFileAs('kategori', $file, $namaFile);
+            $gambarPath = $this->storeKategoriImage($request->file('gambar'));
         }
         Kategori::create([
             'id' => 'K-' . strtoupper(Str::random(6)),
             'nama' => $request->nama,
-            'gambar' => $namaFile,
+            'gambar' => $gambarPath,
         ]);
 
         return back()->with('success', 'Kategori berhasil ditambahkan');
@@ -59,13 +115,11 @@ class KategoriController extends Controller
         ]);
 
         if ($request->hasFile('gambar')) {
-            if ($kategori->gambar && Storage::disk('public')->exists('kategori/' . $kategori->gambar)) {
-                Storage::disk('public')->delete('kategori/' . $kategori->gambar);
-            }
-            $file = $request->file('gambar');
-            $namaFile = time() . '_' . $file->getClientOriginalName();
-            Storage::disk('public')->putFileAs('kategori', $file, $namaFile);
-            $kategori->update(['gambar' => $namaFile]);
+            $this->deleteKategoriImage($kategori->gambar);
+
+            $kategori->update([
+                'gambar' => $this->storeKategoriImage($request->file('gambar')),
+            ]);
         }
 
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil diupdate');
@@ -73,9 +127,9 @@ class KategoriController extends Controller
     public function destroy($id)
     {
         $kategori = Kategori::where('id', $id)->firstOrFail();
-        if ($kategori->gambar && Storage::disk('public')->exists('kategori/' . $kategori->gambar)) {
-            Storage::disk('public')->delete('kategori/' . $kategori->gambar);
-        }
+
+        $this->deleteKategoriImage($kategori->gambar);
+
         $kategori->delete();
 
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil dihapus.');
