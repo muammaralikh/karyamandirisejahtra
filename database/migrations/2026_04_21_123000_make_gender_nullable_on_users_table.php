@@ -9,24 +9,28 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::statement("ALTER TABLE users MODIFY gender ENUM('male','female') NULL");
+        if ($this->isMySql()) {
+            DB::statement("ALTER TABLE users MODIFY gender ENUM('male','female') NULL");
 
-        if (!$this->hasEmailUniqueIndex()) {
-            Schema::table('users', function (Blueprint $table) {
-                $table->unique('email');
-            });
+            if (! $this->hasEmailUniqueIndex()) {
+                Schema::table('users', function (Blueprint $table) {
+                    $table->unique('email');
+                });
+            }
         }
     }
 
     public function down(): void
     {
-        if ($this->hasEmailUniqueIndex()) {
-            Schema::table('users', function (Blueprint $table) {
-                $table->dropUnique('users_email_unique');
-            });
-        }
+        if ($this->isMySql()) {
+            if ($this->hasEmailUniqueIndex()) {
+                Schema::table('users', function (Blueprint $table) {
+                    $table->dropUnique('users_email_unique');
+                });
+            }
 
-        DB::statement("ALTER TABLE users MODIFY gender ENUM('male','female') NOT NULL");
+            DB::statement("ALTER TABLE users MODIFY gender ENUM('male','female') NOT NULL");
+        }
     }
 
     private function hasEmailUniqueIndex(): bool
@@ -39,5 +43,10 @@ return new class extends Migration
             ->exists();
 
         return $index;
+    }
+
+    private function isMySql(): bool
+    {
+        return DB::getDriverName() === 'mysql';
     }
 };

@@ -11,18 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order_items', function (Blueprint $table) {
-            $table->id();
-            $table->string('order_id');
-            $table->string('produk_id');
-            $table->integer('qty');
-            $table->decimal('harga', 12, 2);
-            $table->timestamps();
+        if (! Schema::hasTable('order_items')) {
+            Schema::create('order_items', function (Blueprint $table) {
+                $table->id();
+                $table->string('order_id');
+                $table->string('produk_id');
+                $table->integer('qty');
+                $table->decimal('harga', 12, 2);
+                $table->timestamps();
 
-            // Foreign keys
-            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
-            $table->foreign('produk_id')->references('id')->on('produk')->onDelete('cascade');
-        });
+                // Foreign keys
+                $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
+                $table->foreign('produk_id')->references('id')->on('produk')->onDelete('cascade');
+            });
+        }
     }
 
     /**

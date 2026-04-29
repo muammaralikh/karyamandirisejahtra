@@ -8,15 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('produk', function (Blueprint $table) {
-            $table->unsignedInteger('stok')->default(0)->after('harga');
-        });
+        if (Schema::hasTable('produk') && ! Schema::hasColumn('produk', 'stok')) {
+            Schema::table('produk', function (Blueprint $table) {
+                $table->unsignedInteger('stok')->default(0)->after('harga');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('produk', function (Blueprint $table) {
-            $table->dropColumn('stok');
-        });
+        if (Schema::hasTable('produk') && Schema::hasColumn('produk', 'stok')) {
+            Schema::table('produk', function (Blueprint $table) {
+                $table->dropColumn('stok');
+            });
+        }
     }
 };

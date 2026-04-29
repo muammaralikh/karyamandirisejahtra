@@ -11,19 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('produk', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->string('kategori_id');
-            $table->string('nama');
-            $table->string('gambar')->nullable();
-            $table->decimal('harga', 12, 2);
-            $table->text('deskripsi')->nullable();
-            $table->integer('stok')->default(0);
-            $table->timestamps();
+        if (! Schema::hasTable('produk')) {
+            Schema::create('produk', function (Blueprint $table) {
+                $table->string('id')->primary();
+                $table->string('kategori_id');
+                $table->string('nama');
+                $table->string('gambar')->nullable();
+                $table->decimal('harga', 12, 2);
+                $table->text('deskripsi')->nullable();
+                $table->integer('stok')->default(0);
+                $table->timestamps();
 
-            // Foreign key
-            $table->foreign('kategori_id')->references('id')->on('kategori')->onDelete('cascade');
-        });
+                // Foreign key
+                $table->foreign('kategori_id')->references('id')->on('kategori')->onDelete('cascade');
+            });
+        }
     }
 
     /**

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Throwable;
 
 class AuthController extends Controller
@@ -103,6 +104,16 @@ class AuthController extends Controller
             $status = Password::sendResetLink(
                 $request->only('email')
             );
+        } catch (TransportExceptionInterface $exception) {
+            report($exception);
+            $message = $exception->getMessage();
+            $smtpHint = str_contains($message, '535')
+                ? 'Autentikasi Gmail ditolak (535). Gunakan App Password Gmail terbaru (16 karakter) dan pastikan 2-Step Verification aktif.'
+                : 'Koneksi email gagal. Periksa konfigurasi SMTP (host, port, username, app password) lalu coba lagi.';
+
+            return back()
+                ->withInput($request->only('email'))
+                ->with('error', $smtpHint);
         } catch (Throwable $exception) {
             report($exception);
 
