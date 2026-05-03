@@ -83,7 +83,9 @@
 
                                 <div class="cart-item-actions">
                                     <form action="{{ route('user.account.cart.remove', $item->id) }}" method="POST"
-                                        onsubmit="return confirm('Hapus produk dari keranjang?')">
+                                        class="cart-confirm-form" data-confirm-title="Hapus produk ini?"
+                                        data-confirm-text="Produk akan dihapus dari keranjang Anda."
+                                        data-confirm-button="Ya, hapus">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-remove">
@@ -100,7 +102,9 @@
                                 <i class="fas fa-arrow-left"></i> Lanjut Belanja
                             </a>
                             <form action="{{ route('user.account.cart.clear') }}" method="POST"
-                                onsubmit="return confirm('Kosongkan seluruh keranjang?')">
+                                class="cart-confirm-form" data-confirm-title="Kosongkan semua keranjang?"
+                                data-confirm-text="Semua produk di keranjang akan dihapus."
+                                data-confirm-button="Ya, kosongkan">
                                 @csrf
                                 <button type="submit" class="btn-clear">
                                     <i class="fas fa-trash-alt"></i> Kosongkan Keranjang
@@ -690,6 +694,32 @@
 
         // Event listeners
         document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.cart-confirm-form').forEach(form => {
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+
+                    const title = this.dataset.confirmTitle || 'Konfirmasi aksi';
+                    const text = this.dataset.confirmText || 'Aksi ini akan diproses.';
+                    const confirmButtonText = this.dataset.confirmButton || 'Ya, lanjutkan';
+
+                    Swal.fire({
+                        title: title,
+                        text: text,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#f44336',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: confirmButtonText,
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.submit();
+                        }
+                    });
+                });
+            });
+
             // Simpan nilai awal quantity
             document.querySelectorAll('.qty-input').forEach(input => {
                 input.setAttribute('data-previous', input.value);
