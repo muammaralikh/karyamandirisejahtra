@@ -77,10 +77,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 // Route Profil Toko
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/profil-toko', [ShippingRateController::class, 'index'])->name('profil-toko.index');
-    Route::post('/profil-toko/ongkir', [ShippingRateController::class, 'store'])->name('shipping-rates.store');
-    Route::put('/profil-toko/ongkir/{shippingRate}', [ShippingRateController::class, 'update'])->name('shipping-rates.update');
-    Route::delete('/profil-toko/ongkir/{shippingRate}', [ShippingRateController::class, 'destroy'])->name('shipping-rates.destroy');
+    Route::get('/ongkir-pesanan', [ShippingRateController::class, 'index'])->name('ongkir-pesanan.index');
+    Route::post('/ongkir-pesanan/ongkir', [ShippingRateController::class, 'store'])->name('shipping-rates.store');
+    Route::put('/ongkir-pesanan/ongkir/{shippingRate}', [ShippingRateController::class, 'update'])->name('shipping-rates.update');
+    Route::delete('/ongkir-pesanan/ongkir/{shippingRate}', [ShippingRateController::class, 'destroy'])->name('shipping-rates.destroy');
 });
 
 // Route Daftar User

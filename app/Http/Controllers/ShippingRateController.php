@@ -10,7 +10,7 @@ class ShippingRateController extends Controller
     private function setActive(): array
     {
         return [
-            'activeProfilToko' => 'profil-toko',
+            'activeOngkirPesanan' => 'ongkir-pesanan',
         ];
     }
 
@@ -29,7 +29,7 @@ class ShippingRateController extends Controller
 
         $shippingRates = $query->paginate(10)->withQueryString();
 
-        return view('admin.pages.profil-toko', compact('shippingRates'), $this->setActive());
+        return view('admin.pages.ongkir-pesanan', compact('shippingRates'), $this->setActive());
     }
 
     public function store(Request $request)

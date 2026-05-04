@@ -104,8 +104,8 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ route('profil-toko.index') }}"
-                class="nav-link {{ ($activeProfilToko ?? '') == 'profil-toko' ? 'active' : '' }}">
+              <a href="{{ route('ongkir-pesanan.index') }}"
+                class="nav-link {{ ($activeOngkirPesanan ?? '') == 'ongkir-pesanan' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-shipping-fast"></i>
                 <p class="text-white">Ongkir Pesanan</p>
               </a>

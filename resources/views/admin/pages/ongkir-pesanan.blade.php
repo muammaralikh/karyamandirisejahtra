@@ -25,6 +25,28 @@
     </script>
 @endif
 
+<style>
+    .ongkir-pesanan-pagination {
+        margin-top: 0;
+        padding-top: 0.5rem;
+    }
+    .ongkir-pesanan-pagination .pagination {
+        justify-content: flex-end;
+        margin: 0;
+    }
+    .ongkir-pesanan-pagination .page-link {
+        padding: 0.35rem 0.75rem;
+        min-width: 0;
+        border-radius: 0.35rem;
+    }
+    .ongkir-pesanan-pagination .page-item {
+        margin: 0 0.15rem;
+    }
+    .ongkir-pesanan-pagination .text-muted {
+        font-size: 0.85rem;
+    }
+</style>
+
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
@@ -48,7 +70,7 @@
                     <h3 class="card-title">Tarif Ongkir per Kecamatan/Kota</h3>
                 </div>
                 <div class="card-body">
-                    <form method="GET" action="{{ route('profil-toko.index') }}" class="mb-4">
+                    <form method="GET" action="{{ route('ongkir-pesanan.index') }}" class="mb-4">
                         <div class="row">
                             <div class="col-md-5 col-sm-8 mb-2">
                                 <input type="text" name="search" class="form-control" placeholder="Cari kecamatan atau kota..." value="{{ request('search') }}">
@@ -57,7 +79,7 @@
                                 <button class="btn btn-primary btn-sm mr-2">
                                     <i class="fas fa-search"></i> Cari
                                 </button>
-                                <a href="{{ route('profil-toko.index') }}" class="btn btn-secondary btn-sm">
+                                <a href="{{ route('ongkir-pesanan.index') }}" class="btn btn-secondary btn-sm">
                                     <i class="fas fa-redo"></i> Reset
                                 </a>
                             </div>
@@ -102,6 +124,18 @@
                         </table>
                     </div>
                 </div>
+                @if($shippingRates->hasPages())
+                    <div class="card-footer ongkir-pesanan-pagination">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-muted">
+                                Menampilkan {{ $shippingRates->firstItem() }} - {{ $shippingRates->lastItem() }} dari {{ $shippingRates->total() }} data
+                            </div>
+                            <div class="pagination pagination-sm">
+                                {{ $shippingRates->links('vendor.pagination.ongkir-pesanan') }}
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </section>

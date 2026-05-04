@@ -11,8 +11,14 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $email = env('SUPERADMIN_EMAIL', 'karyamandirisejahtera.dkw@gmail.com');
-        $password = env('SUPERADMIN_PASSWORD', 'kmsdukuhwaluh');
+        $email = env('SUPERADMIN_EMAIL');
+        $password = env('SUPERADMIN_PASSWORD');
+
+        if (blank($email) || blank($password)) {
+            $this->command?->warn('SUPERADMIN_EMAIL dan SUPERADMIN_PASSWORD belum diisi; superadmin tidak dibuat.');
+
+            return;
+        }
 
         User::updateOrCreate([
             'email' => $email,
