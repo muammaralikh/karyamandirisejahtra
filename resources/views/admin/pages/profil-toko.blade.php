@@ -48,6 +48,14 @@
                     <h3 class="card-title">Tarif Ongkir per Kecamatan/Kota</h3>
                 </div>
                 <div class="card-body">
+                    <style>
+                        /* Hide table summary/info text on Ongkir page pagination */
+                        .dataTables_info,
+                        .pagination-info,
+                        .page-info {
+                            display: none !important;
+                        }
+                    </style>
                     <form method="GET" action="{{ route('profil-toko.index') }}" class="mb-4">
                         <div class="row">
                             <div class="col-md-5 col-sm-8 mb-2">
