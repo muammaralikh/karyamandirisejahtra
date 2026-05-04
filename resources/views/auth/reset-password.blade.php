@@ -1,6 +1,6 @@
 @extends('auth.layout')
 
-@section('title', 'Atur Ulang Password')
+@section('title', 'Reset Password KMS')
 @section('heading', 'Atur Password Baru')
 @section('subtitle', 'Gunakan password baru yang kuat agar akun tetap aman.')
 

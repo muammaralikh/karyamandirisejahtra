@@ -1,8 +1,8 @@
 @extends('auth.layout')
 
-@section('title', 'Login')
-@section('heading', 'Masuk ke Akun')
-@section('subtitle', '')
+@section('title', 'Login KMS')
+@section('heading', 'Masuk ke Akun KMS')
+@section('subtitle', 'Gunakan email dan password Karya Mandiri Sejahtera untuk masuk.')
 
 @section('content')
     <form action="{{ route('proses.login') }}" method="POST" class="auth-form">

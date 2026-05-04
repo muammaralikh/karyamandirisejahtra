@@ -53,7 +53,8 @@
 
         .auth-brand {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             margin-bottom: 18px;
         }
 
@@ -61,6 +62,15 @@
             height: 58px;
             width: auto;
             display: block;
+            margin-bottom: 10px;
+        }
+
+        .auth-brand-text {
+            color: var(--auth-primary);
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
         }
 
         .auth-card h2 {
@@ -196,6 +206,7 @@
         <main class="auth-card">
             <div class="auth-brand">
                 <img src="{{ asset('logo/logo.kms.jpg.jpeg') }}" alt="Logo KMS">
+                <span class="auth-brand-text">Karya Mandiri Sejahtera</span>
             </div>
             <h2>@yield('heading')</h2>
             @hasSection('subtitle')
