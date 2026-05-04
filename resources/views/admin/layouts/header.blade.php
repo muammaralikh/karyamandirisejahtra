@@ -4,8 +4,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Karya Mandiri Sejahtera</title>
   <meta name="theme-color" content="#499159">
-  <link rel="apple-touch-icon" href="{{ asset('assets/logo/logo.jpeg') }}">
+  <link rel="icon" type="image/jpeg" href="{{ asset('logo/logo.kms.jpg.jpeg') }}">
+  <link rel="apple-touch-icon" href="{{ asset('logo/logo.kms.jpg.jpeg') }}">
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
@@ -36,23 +38,51 @@
   <!-- AdminLTE -->
   <script src="{{ asset('admin/assets/dist/js/adminlte.min.js') }}"></script>
 
-</head>
-<style>
-  .btn-logout {
-    background-color: red;
-    color: black;
-    border: none;
-    padding: 3px 12px;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-  }
+  <style>
+    .btn-logout {
+      background-color: red;
+      color: black;
+      border: none;
+      padding: 3px 12px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
   .btn-logout:hover {
     background-color: darkred;
     color: white;
   }
+
+  .main-header {
+    min-height: 70px;
+  }
+
+  .main-header .navbar {
+    min-height: 70px;
+    padding: 0 1rem;
+  }
+
+  .main-header .navbar-nav .nav-link {
+    height: 70px;
+    line-height: 70px;
+    display: flex;
+    align-items: center;
+    padding: 0 0.9rem;
+  }
+
+  .main-header .navbar-nav .nav-link i {
+    font-size: 1.1rem;
+  }
+
+  .main-sidebar .brand-link {
+    min-height: 70px;
+    height: 70px;
+    padding: 0 12px;
+  }
+
 </style>
+</head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
   <div class="wrapper">
