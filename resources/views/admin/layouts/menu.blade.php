@@ -62,6 +62,13 @@
               </a>
             </li>
             <li class="nav-item">
+              <a href="{{ route('profil-toko.index') }}"
+                class="nav-link {{ ($activeProfilToko ?? '') == 'profil-toko' ? 'active' : '' }}">
+                <i class="nav-icon fas fa-shipping-fast"></i>
+                <p class="text-white">Ongkir Pesanan</p>
+              </a>
+            </li>
+            <li class="nav-item">
               <a href="{{ route(name: 'pesanan.index') }}"
                 class="nav-link {{ ($activePesanan ?? '') == 'pesanan' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-shopping-bag"></i>
