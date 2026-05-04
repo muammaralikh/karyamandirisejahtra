@@ -45,13 +45,13 @@
         <div class="container-fluid">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Tarif Ongkir per Kota/Kabupaten</h3>
+                    <h3 class="card-title">Tarif Ongkir per Kecamatan/Kota</h3>
                 </div>
                 <div class="card-body">
                     <form method="GET" action="{{ route('profil-toko.index') }}" class="mb-4">
                         <div class="row">
                             <div class="col-md-5 col-sm-8 mb-2">
-                                <input type="text" name="search" class="form-control" placeholder="Cari kota atau kabupaten..." value="{{ request('search') }}">
+                                <input type="text" name="search" class="form-control" placeholder="Cari kecamatan atau kota..." value="{{ request('search') }}">
                             </div>
                             <div class="col-md-7 col-sm-4 mb-2">
                                 <button class="btn btn-primary btn-sm mr-2">
@@ -69,7 +69,7 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th width="50">#</th>
-                                    <th>Kota</th>
+                                    <th>Kecamatan atau Kota</th>
                                     <th>Kabupaten</th>
                                     <th width="160">Tarif Ongkir</th>
                                     <th width="160" class="text-center">Aksi</th>

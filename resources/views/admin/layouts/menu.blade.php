@@ -19,10 +19,51 @@
           background-color: rgba(255, 255, 255, 0.12);
           border-radius: 12px;
         }
+        .main-sidebar .brand-link {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          padding: 14px 12px;
+          min-height: 70px;
+          margin-bottom: 0;
+          color: #fff;
+          white-space: normal;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .main-sidebar .brand-link img {
+          height: 42px;
+          width: 42px;
+          object-fit: contain;
+          border-radius: 50%;
+          background: #fff;
+          flex-shrink: 0;
+        }
+        .main-sidebar .brand-text {
+          font-size: 0.98rem;
+          font-weight: 700;
+          line-height: 1.2;
+          color: #fff;
+        }
+        body.sidebar-collapse .main-sidebar .brand-link,
+        .sidebar-collapse .main-sidebar .brand-link {
+          justify-content: center;
+          padding: 12px 0;
+          overflow: hidden;
+        }
+        body.sidebar-collapse .main-sidebar .brand-link .brand-text,
+        .sidebar-collapse .main-sidebar .brand-link .brand-text {
+          display: none;
+        }
+        body.sidebar-collapse .main-sidebar .brand-link img,
+        .sidebar-collapse .main-sidebar .brand-link img {
+          margin: 0 auto;
+        }
       </style>
       <!-- Brand Logo -->
-      <a href="" class="brand-link text-center">
-        <img src="{{ asset('logo/logo.kms.jpg.jpeg') }}" alt="Logo" style="height: 50px; width: auto;">
+      <a href="{{ route('admin.dashboard') }}" class="brand-link">
+        <img src="{{ asset('logo/logo.kms.jpg.jpeg') }}" alt="Logo KMS">
+        <span class="brand-text">Karya Mandiri Sejahtera</span>
       </a>
 
       <!-- Sidebar -->
