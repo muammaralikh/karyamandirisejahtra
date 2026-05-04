@@ -1,7 +1,7 @@
 @extends('auth.layout')
 
 @section('title', 'Login KMS')
-@section('heading', 'Masuk ke Akun KMS')
+@section('heading', 'KMS')
 @section('subtitle', 'Gunakan email dan password Karya Mandiri Sejahtera untuk masuk.')
 
 @section('content')
