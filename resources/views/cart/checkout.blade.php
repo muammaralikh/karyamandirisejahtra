@@ -145,14 +145,14 @@
                             
                             <div class="summary-row">
                                 <span>Ongkos Kirim</span>
-                                <span class="free-shipping">Rp {{ number_format($shippingCost, 0, ',', '.') }}</span>
+                                <span class="free-shipping" id="shippingCostText">Rp {{ number_format($shippingCost, 0, ',', '.') }}</span>
                             </div>
                             
                             <div class="summary-divider"></div>
                             
                             <div class="summary-total">
                                 <span>Total Bayar</span>
-                                <span class="total-amount">Rp {{ number_format($grandTotal, 0, ',', '.') }}</span>
+                                <span class="total-amount" id="grandTotalText">Rp {{ number_format($grandTotal, 0, ',', '.') }}</span>
                             </div>
                         </div>
                         
@@ -687,18 +687,64 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitBtn = document.getElementById('submitBtn');
     const agreeTerms = document.getElementById('agreeTerms');
     const checkoutForm = document.getElementById('checkoutForm');
+    const addressRadios = document.querySelectorAll('input[name="address_id"]');
+    const shippingCostText = document.getElementById('shippingCostText');
+    const grandTotalText = document.getElementById('grandTotalText');
+    const subtotal = {{ (float) $subtotal }};
+    const addressShippingRates = @json($addressShippingRates ?? []);
     
     // Cek apakah ada alamat
     const hasAddress = {{ $addresses->count() > 0 ? 'true' : 'false' }};
+
+    function formatRupiah(value) {
+        return 'Rp ' + Number(value).toLocaleString('id-ID');
+    }
+
+    function getSelectedRate() {
+        const selectedAddress = document.querySelector('input[name="address_id"]:checked');
+
+        if (!selectedAddress) {
+            return { available: false, cost: 0 };
+        }
+
+        return addressShippingRates[selectedAddress.value] || { available: false, cost: 0 };
+    }
+
+    function refreshShippingSummary() {
+        const selectedRate = getSelectedRate();
+        const shippingCost = selectedRate.available ? Number(selectedRate.cost) : 0;
+
+        shippingCostText.textContent = formatRupiah(shippingCost);
+        grandTotalText.textContent = formatRupiah(subtotal + shippingCost);
+    }
+
+    function refreshSubmitState() {
+        const selectedRate = getSelectedRate();
+        const canSubmit = hasAddress && agreeTerms.checked && selectedRate.available;
+
+        submitBtn.disabled = !canSubmit;
+        submitBtn.title = !hasAddress
+            ? 'Tambahkan alamat terlebih dahulu'
+            : selectedRate.available
+            ? ''
+            : 'Tarif ongkir untuk alamat ini belum tersedia';
+    }
     
     if (!hasAddress) {
         submitBtn.disabled = true;
         submitBtn.title = 'Tambahkan alamat terlebih dahulu';
     }
+
+    addressRadios.forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            refreshShippingSummary();
+            refreshSubmitState();
+        });
+    });
     
     // Toggle submit button berdasarkan checkbox
     agreeTerms.addEventListener('change', function() {
-        submitBtn.disabled = !this.checked;
+        refreshSubmitState();
     });
     
     // Form submission dengan loading
@@ -706,6 +752,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!agreeTerms.checked) {
             e.preventDefault();
             alert('Anda harus menyetujui syarat & ketentuan terlebih dahulu');
+            return;
+        }
+
+        if (!getSelectedRate().available) {
+            e.preventDefault();
+            alert('Tarif ongkir untuk alamat ini belum tersedia. Silakan pilih alamat lain atau hubungi admin.');
             return;
         }
         
@@ -722,6 +774,9 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.height = (this.scrollHeight) + 'px';
         });
     }
+
+    refreshShippingSummary();
+    refreshSubmitState();
 });
 </script>
 @endsection

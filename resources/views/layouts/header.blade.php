@@ -1,6 +1,6 @@
 @php
-    $title = $title ?? 'Lele';
-    $description = $description ?? 'Toko lele terpercaya dengan produk berkualitas';
+    $title = $title ?? 'Karya Mandiri Sejahtera';
+    $description = $description ?? 'Karya Mandiri Sejahtera, produk olahan lokal berkualitas';
 @endphp
 
 <meta charset="UTF-8">
@@ -16,7 +16,8 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <!-- Favicon -->
-<link rel="icon" type="image/x-icon" href="{{ asset('assets/images/logo.png') }}">
+<link rel="icon" type="image/jpeg" href="{{ asset('logo/logo.kms.jpg.jpeg') }}">
+<link rel="apple-touch-icon" href="{{ asset('logo/logo.kms.jpg.jpeg') }}">
 
 <!-- CSS -->
 <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">

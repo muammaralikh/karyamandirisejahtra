@@ -12,6 +12,7 @@ use App\Http\Controllers\RegionController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PesananController;
+use App\Http\Controllers\ShippingRateController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/produk/{id}', [HomeController::class, 'showProduk'])->name('produk.show');
@@ -72,6 +73,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ->name('pesanan.destroy');
     Route::get('/export/excel', [PesananController::class, 'exportExcel'])
         ->name('pesanan.export.excel');
+});
+
+// Route Profil Toko
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/profil-toko', [ShippingRateController::class, 'index'])->name('profil-toko.index');
+    Route::post('/profil-toko/ongkir', [ShippingRateController::class, 'store'])->name('shipping-rates.store');
+    Route::put('/profil-toko/ongkir/{shippingRate}', [ShippingRateController::class, 'update'])->name('shipping-rates.update');
+    Route::delete('/profil-toko/ongkir/{shippingRate}', [ShippingRateController::class, 'destroy'])->name('shipping-rates.destroy');
 });
 
 // Route Daftar User

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Produk;
 use App\Models\Kategori;
@@ -46,10 +47,18 @@ class AdminController extends Controller
             . ' - '
             . $endDate->copy()->subMonth()->locale('id')->isoFormat('MMMM YYYY');
 
+        $driver = DB::connection()->getDriverName();
+        $yearExpression = $driver === 'sqlite'
+            ? "CAST(strftime('%Y', created_at) AS INTEGER)"
+            : 'YEAR(created_at)';
+        $monthExpression = $driver === 'sqlite'
+            ? "CAST(strftime('%m', created_at) AS INTEGER)"
+            : 'MONTH(created_at)';
+
         $salesQuery = Order::where('status', 'completed')
             ->where('created_at', '>=', $startDate)
             ->where('created_at', '<', $endDate)
-            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(total) as total')
+            ->selectRaw("{$yearExpression} as year, {$monthExpression} as month, SUM(total) as total")
             ->groupBy('year', 'month')
             ->orderBy('year')
             ->orderBy('month')

@@ -128,7 +128,19 @@ class ProdukController extends Controller
             'harga' => 'required|numeric',
             'stok' => 'required|integer|min:0',
             'deskripsi' => 'required',
-            'gambar' => 'nullable|image|max:2048',
+            'gambar' => 'required|image|max:2048',
+        ], [
+            'kategori_id.required' => 'Kategori wajib dipilih.',
+            'nama.required' => 'Nama produk wajib diisi.',
+            'harga.required' => 'Harga produk wajib diisi.',
+            'harga.numeric' => 'Harga produk harus berupa angka.',
+            'stok.required' => 'Stok produk wajib diisi.',
+            'stok.integer' => 'Stok produk harus berupa angka bulat.',
+            'stok.min' => 'Stok produk tidak boleh kurang dari 0.',
+            'deskripsi.required' => 'Deskripsi produk wajib diisi.',
+            'gambar.required' => 'Gambar produk wajib diisi.',
+            'gambar.image' => 'File gambar harus berupa gambar yang valid.',
+            'gambar.max' => 'Ukuran gambar maksimal 2MB.',
         ]);
 
         $gambarPath = null;

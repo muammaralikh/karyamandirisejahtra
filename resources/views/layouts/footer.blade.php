@@ -7,13 +7,6 @@
                     Karya Mandiri Sejahtera,<br>
                     Produk Olahan Lokal, Kualitas Maksimal!!.
                 </p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                    <a href="#"><i class="fab fa-tiktok"></i></a>
-                </div>
             </div>
             <div class="footer-section footer-section-category">
                 <h3>Kategori</h3>

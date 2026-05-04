@@ -144,6 +144,18 @@
     </script>
 @endif
 
+@if($errors->any())
+    <script>
+        const validationErrors = @json($errors->all());
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data belum lengkap',
+            html: validationErrors.join('<br>')
+        });
+    </script>
+@endif
+
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
@@ -325,9 +337,9 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Gambar Produk</label>
+                                <label>Gambar Produk <span class="text-danger">*</span></label>
                                 <div class="custom-file">
-                                    <input type="file" name="gambar" class="custom-file-input" id="gambarInput" accept="image/*">
+                                    <input type="file" name="gambar" class="custom-file-input" id="gambarInput" accept="image/*" required>
                                     <label class="custom-file-label" for="gambarInput">Pilih file...</label>
                                 </div>
                                 <small class="text-muted">Format: JPG, PNG, JPEG (Maks: 2MB)</small>

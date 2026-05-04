@@ -9,13 +9,12 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Address;
 use App\Models\Kategori;
+use App\Models\ShippingRate;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
-    private const SHIPPING_COST = 10000;
-
     public function index()
     {
         $user = Auth::user();
@@ -28,9 +27,11 @@ class CheckoutController extends Controller
         $subtotal = $cartItems->sum(function ($item) {
             return $item->qty * $item->price;
         });
-        $shippingCost = self::SHIPPING_COST;
-        $grandTotal = $subtotal + $shippingCost;
         $addresses = $user->addresses()->orderBy('is_primary', 'desc')->get();
+        $selectedAddress = $addresses->firstWhere('is_primary', true) ?? $addresses->first();
+        $shippingCost = $selectedAddress ? $this->getShippingCostForAddress($selectedAddress) : 0;
+        $grandTotal = $subtotal + $shippingCost;
+        $addressShippingRates = $this->getAddressShippingRates($addresses);
         $categories = Kategori::latest()->get();
         return view('cart.checkout', compact(
             'cartItems',
@@ -38,7 +39,8 @@ class CheckoutController extends Controller
             'subtotal',
             'addresses',
             'shippingCost',
-            'grandTotal'
+            'grandTotal',
+            'addressShippingRates'
         ));
     }
     public function continue($id)
@@ -52,9 +54,11 @@ class CheckoutController extends Controller
         $subtotal = $cartItems->sum(function ($item) {
             return $item->qty * $item->price;
         });
-        $shippingCost = self::SHIPPING_COST;
-        $grandTotal = $subtotal + $shippingCost;
         $addresses = $user->addresses()->orderBy('is_primary', 'desc')->get();
+        $selectedAddress = $addresses->firstWhere('is_primary', true) ?? $addresses->first();
+        $shippingCost = $selectedAddress ? $this->getShippingCostForAddress($selectedAddress) : 0;
+        $grandTotal = $subtotal + $shippingCost;
+        $addressShippingRates = $this->getAddressShippingRates($addresses);
         if ($order->status !== 'pending') {
             return redirect()->route('user.orders.detail', $id)
                 ->with('error', 'Pesanan ini sudah diproses atau telah dibayar');
@@ -65,7 +69,8 @@ class CheckoutController extends Controller
             'subtotal',
             'addresses',
             'shippingCost',
-            'grandTotal'
+            'grandTotal',
+            'addressShippingRates'
         ));
     }
     public function process(Request $request)
@@ -99,10 +104,18 @@ class CheckoutController extends Controller
             $subtotal = $cartItems->sum(function ($item) {
                 return $item->qty * $item->price;
             });
-            $shippingCost = self::SHIPPING_COST;
-            $grandTotal = $subtotal + $shippingCost;
             $orderNumber = 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(6));
-            $address = Address::findOrFail($request->address_id);
+            $address = $user->addresses()->where('id', $request->address_id)->firstOrFail();
+            $shippingRate = ShippingRate::findForAddress($address);
+
+            if (!$shippingRate) {
+                return redirect()->back()
+                    ->with('error', 'Tarif ongkir untuk alamat ini belum tersedia. Silakan pilih alamat lain atau hubungi admin.')
+                    ->withInput();
+            }
+
+            $shippingCost = (float) $shippingRate->tarif_ongkir;
+            $grandTotal = $subtotal + $shippingCost;
             $order = DB::transaction(function () use (
                 $user,
                 $request,
@@ -230,5 +243,26 @@ class CheckoutController extends Controller
     public function instructions()
     {
         return view('checkout.instructions');
+    }
+
+    private function getShippingCostForAddress(Address $address): float
+    {
+        $shippingRate = ShippingRate::findForAddress($address);
+
+        return $shippingRate ? (float) $shippingRate->tarif_ongkir : 0;
+    }
+
+    private function getAddressShippingRates($addresses): array
+    {
+        return $addresses->mapWithKeys(function (Address $address) {
+            $shippingRate = ShippingRate::findForAddress($address);
+
+            return [
+                $address->id => [
+                    'available' => (bool) $shippingRate,
+                    'cost' => $shippingRate ? (float) $shippingRate->tarif_ongkir : 0,
+                ],
+            ];
+        })->all();
     }
 }
