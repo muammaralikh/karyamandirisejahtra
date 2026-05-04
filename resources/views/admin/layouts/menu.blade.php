@@ -24,8 +24,9 @@
           align-items: center;
           justify-content: center;
           gap: 10px;
-          padding: 14px 12px;
+          padding: 0 12px;
           min-height: 70px;
+          height: 70px;
           margin-bottom: 0;
           color: #fff;
           white-space: normal;

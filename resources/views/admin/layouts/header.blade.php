@@ -56,11 +56,14 @@
 
   .main-header {
     min-height: 70px;
+    height: 70px;
   }
 
   .main-header .navbar {
     min-height: 70px;
+    height: 70px;
     padding: 0 1rem;
+    align-items: center;
   }
 
   .main-header .navbar-nav .nav-link {
