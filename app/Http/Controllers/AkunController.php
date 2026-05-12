@@ -48,13 +48,13 @@ class AkunController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'username' => 'nullable|string|max:255|unique:users,username,' . $user->id,
-            'gender' => 'nullable|in:male,female',
+            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
         ], [
             'name.required' => 'Nama lengkap harus diisi',
             'email.required' => 'Email harus diisi',
             'email.email' => 'Format email tidak valid',
             'email.unique' => 'Email sudah digunakan',
+            'username.required' => 'Username harus diisi',
             'username.unique' => 'Username sudah digunakan',
         ]);
 
@@ -62,8 +62,7 @@ class AkunController extends Controller
             // Update data user
             $user->name = $validated['name'];
             $user->email = $validated['email'];
-            $user->username = $validated['username'] ?? $this->generateUniqueUsernameFromEmail($validated['email'], $user->id);
-            $user->gender = $validated['gender'] ?? null;
+            $user->username = $validated['username'];
 
             $user->save();
 
@@ -113,24 +112,31 @@ class AkunController extends Controller
         $user = Auth::user();
 
         $validated = $request->validate([
-            'address_label' => 'required|string|max:50',
+            'address_label' => 'nullable|string|max:50',
             'recipient_name' => 'required|string|max:255',
-            'recipient_phone' => 'required|string|max:20',
+            'recipient_phone' => ['required', 'string', 'regex:/^(08\d{6,11}|62\d{6,11})$/'],
             'province_id' => 'required|exists:provinces,id',
             'city_id' => 'required|exists:cities,id',
             'district_id' => 'required|exists:districts,id',
-            'postal_code' => 'required|string|max:10',
-            'street' => 'required|string',
+            'postal_code' => ['required', 'string', 'max:10', 'regex:/^\d+$/'],
+            'street' => ['required', 'string', 'regex:/^[A-Za-z]/'],
             'notes' => 'nullable|string|max:500',
             'is_primary' => 'nullable|boolean',
             'address_id' => 'nullable|exists:addresses,id'
+        ], [
+            'recipient_phone.required' => 'Nomor HP penerima harus diisi',
+            'recipient_phone.regex' => 'nomor harus di awali 08/62',
+            'postal_code.required' => 'Kode pos harus diisi',
+            'postal_code.regex' => 'Kode pos hanya boleh berisi angka',
+            'street.required' => 'Alamat lengkap harus diisi',
+            'street.regex' => 'Alamat lengkap harus diawali dengan huruf',
         ]);
         $province = Province::find($validated['province_id']);
         $city = City::find($validated['city_id']);
         $district = District::find($validated['district_id']);
 
         $addressData = [
-            'label' => $validated['address_label'],
+            'label' => $validated['address_label'] ?? 'Alamat Pengiriman',
             'recipient_name' => $validated['recipient_name'],
             'recipient_phone' => $validated['recipient_phone'],
             'province_id' => $validated['province_id'],
@@ -179,7 +185,7 @@ class AkunController extends Controller
         $address = $user->addresses()->findOrFail($id);
 
         if ($address->is_primary && $user->addresses()->count() > 1) {
-            return redirect()->route('account.my-account')->with([
+            return redirect()->route('user.account.my-account')->with([
                 'error' => 'Tidak dapat menghapus alamat utama. Silakan tentukan alamat utama baru terlebih dahulu.',
                 'tab' => 'address'
             ]);
@@ -187,7 +193,7 @@ class AkunController extends Controller
 
         $address->delete();
 
-        return redirect()->route('account.my-account')->with([
+        return redirect()->route('user.account.my-account')->with([
             'success' => 'Alamat berhasil dihapus!',
             'tab' => 'address'
         ]);

@@ -19,9 +19,24 @@ class PesananController extends Controller
     }
     public function index(Request $request)
     {
-        $query = Order::with('items.product');
+        $query = Order::with(['items.product', 'user']);
         if ($request->search) {
-            $query->where('order_number', 'like', '%' . $request->search . '%');
+            $search = trim((string) $request->search);
+
+            $query->where(function ($q) use ($search) {
+                $q->where('order_number', 'like', "%{$search}%")
+                    ->orWhere('recipient_name', 'like', "%{$search}%")
+                    ->orWhere('recipient_phone', 'like', "%{$search}%")
+                    ->orWhere('shipping_address', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($userQuery) use ($search) {
+                        $userQuery->where('name', 'like', "%{$search}%")
+                            ->orWhere('username', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('items', function ($itemQuery) use ($search) {
+                        $itemQuery->where('product_name', 'like', "%{$search}%");
+                    });
+            });
         }
 
         $pesanan = $query->paginate(10)->withQueryString();

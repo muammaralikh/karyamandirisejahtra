@@ -41,12 +41,18 @@ class AuthController extends Controller
     public function proses_login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'login' => 'required|string',
             'password' => 'required|string',
             'remember' => 'nullable|boolean',
+        ], [
+            'login.required' => 'Email atau username harus diisi',
+            'password.required' => 'Password harus diisi',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $login = trim((string) $request->login);
+        $user = User::where('email', $login)
+            ->orWhere('username', $login)
+            ->first();
 
         if (
             $user &&
@@ -67,8 +73,8 @@ class AuthController extends Controller
         }
 
         return back()
-            ->withInput($request->only('email'))
-            ->with('error', 'Email atau password salah');
+            ->withInput($request->only('login'))
+            ->with('error', 'Email/username atau password salah');
     }
 
     public function proses_register(Request $request)
@@ -76,16 +82,24 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
-            'username' => 'nullable|string|max:255|unique:users,username',
+            'username' => 'required|string|max:255|unique:users,username',
             'password' => 'required|string|min:8|confirmed',
+        ], [
+            'name.required' => 'Nama lengkap harus diisi',
+            'email.required' => 'Email harus diisi',
+            'email.email' => 'Format email tidak valid',
+            'email.unique' => 'Email sudah digunakan',
+            'username.required' => 'Username harus diisi',
+            'username.unique' => 'Username sudah digunakan',
+            'password.required' => 'Password harus diisi',
+            'password.min' => 'Password minimal 8 karakter',
+            'password.confirmed' => 'Konfirmasi password tidak cocok',
         ]);
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'username' => $request->filled('username')
-                ? $request->username
-                : $this->generateUsernameFromEmail($request->email),
+            'username' => $request->username,
             'password' => Hash::make($request->password),
             'role' => 'user',
             'status' => 'Aktif',

@@ -1,6 +1,6 @@
--- MySQL dump 10.13  Distrib 8.0.30, for Win64 (x86_64)
+﻿-- MySQL dump 10.13  Distrib 8.0.30, for Win64 (x86_64)
 --
--- Host: localhost    Database: project91
+-- Host: 127.0.0.1    Database: project91
 -- ------------------------------------------------------
 -- Server version	8.0.30
 
@@ -43,7 +43,7 @@ CREATE TABLE `addresses` (
   PRIMARY KEY (`id`),
   KEY `addresses_user_id_foreign` (`user_id`),
   CONSTRAINT `addresses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -326,7 +326,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -445,7 +445,7 @@ CREATE TABLE `password_reset_tokens` (
 
 LOCK TABLES `password_reset_tokens` WRITE;
 /*!40000 ALTER TABLE `password_reset_tokens` DISABLE KEYS */;
-INSERT INTO `password_reset_tokens` VALUES ('karyamandirisejahtera.dkw@gmail.com','$2y$12$1d278NWI1/cDOCpLKVG6Mu.d2XRRwMY0mMgTrFnZz2kJIiyHJpeDS','2026-04-28 21:31:02'),('sup3rmarko@gmail.com','$2y$12$p9Gy5Rx7NyIiOcNIvxC60eo97TVLpafCQGqc7rNuLob07utYtDQAK','2026-05-04 13:49:46');
+INSERT INTO `password_reset_tokens` VALUES ('karyamandirisejahtera.dkw@gmail.com','$2y$12$1d278NWI1/cDOCpLKVG6Mu.d2XRRwMY0mMgTrFnZz2kJIiyHJpeDS','2026-04-28 21:31:02'),('sup3rmarko@gmail.com','$2y$12$CCHzVykDKgBPPGAVhZmM8.VmM.2i4gayfDZ87GZDyl6.T9eAGd3ie','2026-05-11 19:02:57');
 /*!40000 ALTER TABLE `password_reset_tokens` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -565,7 +565,7 @@ CREATE TABLE `sessions` (
 
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
-INSERT INTO `sessions` VALUES ('4kA4ij3UESa03iuR24ef1HGrDFYxijdkOJewk67r',7,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiN1AycVVnZTBDS0h1M3BId3FiNWJoWlEzQ3JVbDlxUGhmalM1WVFFYSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJuZXciO2E6MDp7fXM6Mzoib2xkIjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzM6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9wcm9maWwtdG9rbyI7czo1OiJyb3V0ZSI7czoxNzoicHJvZmlsLXRva28uaW5kZXgiO31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo3O30=',1777885885),('DCgxI2BTkklqY2r8FFhSq2919jUjLNYAPaqZ2R17',7,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiM1lPMVhIVWdBRXhORjY4NlVEWkxacEdkcDh4clUyZXZkZjRzUWxqZiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDA6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9wcm9maWwtdG9rbz9wYWdlPTIiO3M6NToicm91dGUiO3M6MTc6InByb2ZpbC10b2tvLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Nzt9',1777924842),('DujUFYKUjCaqqPaIwS7MLdmUdamBmQyH3HmsMevb',7,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiMDEzdmlkSXkzN0FXajVuZnRHSGZ5NU9Fc2lBd3V4STFDdWtYY3dsZCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJuZXciO2E6MDp7fXM6Mzoib2xkIjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9vbmdraXItcGVzYW5hbiI7czo1OiJyb3V0ZSI7czoyMDoib25na2lyLXBlc2FuYW4uaW5kZXgiO31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo3O30=',1777927830);
+INSERT INTO `sessions` VALUES ('4kA4ij3UESa03iuR24ef1HGrDFYxijdkOJewk67r',7,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiN1AycVVnZTBDS0h1M3BId3FiNWJoWlEzQ3JVbDlxUGhmalM1WVFFYSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJuZXciO2E6MDp7fXM6Mzoib2xkIjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzM6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9wcm9maWwtdG9rbyI7czo1OiJyb3V0ZSI7czoxNzoicHJvZmlsLXRva28uaW5kZXgiO31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo3O30=',1777885885),('DCgxI2BTkklqY2r8FFhSq2919jUjLNYAPaqZ2R17',7,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiM1lPMVhIVWdBRXhORjY4NlVEWkxacEdkcDh4clUyZXZkZjRzUWxqZiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDA6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9wcm9maWwtdG9rbz9wYWdlPTIiO3M6NToicm91dGUiO3M6MTc6InByb2ZpbC10b2tvLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Nzt9',1777924842),('DujUFYKUjCaqqPaIwS7MLdmUdamBmQyH3HmsMevb',7,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiMDEzdmlkSXkzN0FXajVuZnRHSGZ5NU9Fc2lBd3V4STFDdWtYY3dsZCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJuZXciO2E6MDp7fXM6Mzoib2xkIjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQiO3M6NToicm91dGUiO3M6MTU6ImFkbWluLmRhc2hib2FyZCI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjc7fQ==',1777928569),('h18xKGEtB5RypkWPCuErRw10jkdZs9M5YV7kIeEx',8,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiWFA0bmdmMUhBRWpqOHd4djQydGc4NmlwT1kweHBkczJQUnJsOVE2QiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC91c2VyL2FrdW4tc2F5YSI7czo1OiJyb3V0ZSI7czoyMzoidXNlci5hY2NvdW50Lm15LWFjY291bnQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo4O30=',1778552489),('iEmSbcJx4EDsfwZv9vnDEflygia3tHiBrcctTI6G',NULL,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTozOntzOjY6Il90b2tlbiI7czo0MDoiWGNlNGpnTzZIV2ZSSnJBQUM1SkloQUJheUZQcVcwQmJ3c2UyVDRKbSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJuZXciO2E6MDp7fXM6Mzoib2xkIjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7czo1OiJyb3V0ZSI7czo1OiJsb2dpbiI7fX0=',1778557328);
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -659,9 +659,13 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (7,'Super Admin Utama','karyamandirisejahtera.dkw@gmail.com','2026-04-21 05:22:42','karyamandirisejahteradkw','$2y$12$Xr/cSlOtbj0pAiX.POIktecQGykbgcu7WXRQ/aZSAevnGapkFRF9K','admin','Aktif',NULL,'2026-04-21 05:22:42','2026-04-21 05:22:42','male'),(8,'amar','sup3rmarko@gmail.com',NULL,'supermarko','$2y$12$eJ7YZgJy0hlM66spg2lKOeVCG9CMm1YOjFy5VvtTtC/4A21rqRMiu','user','Aktif','5Yk51TnYpIaurMIWyZV7M82hL7lsQ4VeX5y1zdXG5unHCAiSaftDSL0g6SiX','2026-04-21 05:33:46','2026-04-28 21:13:40','male');
+INSERT INTO `users` VALUES (7,'KMS Official','karyamandirisejahtera.dkw@gmail.com','2026-04-21 05:22:42','kmsofficial','$2y$12$Xr/cSlOtbj0pAiX.POIktecQGykbgcu7WXRQ/aZSAevnGapkFRF9K','admin','Aktif',NULL,'2026-04-21 05:22:42','2026-05-11 20:03:10','male'),(8,'amar','sup3rmarko@gmail.com',NULL,'supermarko','$2y$12$eJ7YZgJy0hlM66spg2lKOeVCG9CMm1YOjFy5VvtTtC/4A21rqRMiu','user','Aktif','iqMp7AyfrcOizosyXpFcNLMiDKSjNqBZI7f29vonbZinEPOVxAOjLgjxGUOS','2026-04-21 05:33:46','2026-04-28 21:13:40','male');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'project91'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -672,4 +676,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-05  3:57:00
+-- Dump completed on 2026-05-12 10:56:46

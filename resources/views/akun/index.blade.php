@@ -508,23 +508,10 @@
                             <label for="username" class="form-label required">Username</label>
                             <input type="text" id="username" name="username" class="form-control"
                                 value="{{ old('username', $user->username) }}"
-                                placeholder="Opsional, akan dibuat otomatis jika kosong">
+                                placeholder="Username wajib diisi" required>
                             @error('username')
                                 <p class="form-text" style="color: var(--danger-color);">{{ $message }}</p>
                             @enderror
-                        </div>
-
-                        <div class="form-row">
-                            <!-- Gender -->
-                            <div class="form-group">
-                                <label for="gender" class="form-label">Jenis Kelamin</label>
-                                <select id="gender" name="gender" class="form-control">
-                                    <option value="">Pilih Jenis Kelamin</option>
-                                    <option value="male" {{ old('gender', $user->gender) == 'male' ? 'selected' : '' }}>
-                                        Laki-laki</option>
-                                    <option value="female" {{ old('gender', $user->gender) == 'female' ? 'selected' : '' }}>Perempuan</option>
-                                </select>
-                            </div>
                         </div>
 
                         <!-- Member Since -->
@@ -557,8 +544,6 @@
                                     @if($address->is_primary)
                                         <span class="address-badge">UTAMA</span>
                                     @endif
-
-                                    <div class="address-label">{{ $address->label }}</div>
 
                                     <div class="address-details">
                                         <p><strong>Penerima:</strong> {{ $address->recipient_name }}</p>
@@ -618,21 +603,13 @@
                             @csrf
                             <input type="hidden" name="address_id" id="address_id">
 
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="address_label" class="form-label required">Label Alamat</label>
-                                    <input type="text" id="address_label" name="address_label" class="form-control"
-                                        placeholder="Contoh: Rumah, Kantor, Kos" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label">Alamat Utama</label>
-                                    <div style="margin-top: 8px;">
-                                        <label style="display: flex; align-items: center; cursor: pointer;">
-                                            <input type="checkbox" id="is_primary" name="is_primary" value="1">
-                                            <span style="margin-left: 8px;">Jadikan alamat utama</span>
-                                        </label>
-                                    </div>
+                            <div class="form-group">
+                                <label class="form-label">Alamat Utama</label>
+                                <div style="margin-top: 8px;">
+                                    <label style="display: flex; align-items: center; cursor: pointer;">
+                                        <input type="checkbox" id="is_primary" name="is_primary" value="1">
+                                        <span style="margin-left: 8px;">Jadikan alamat utama</span>
+                                    </label>
                                 </div>
                             </div>
 
@@ -646,7 +623,11 @@
                                 <div class="form-group">
                                     <label for="recipient_phone" class="form-label required">Telepon Penerima</label>
                                     <input type="text" id="recipient_phone" name="recipient_phone" class="form-control"
-                                        required>
+                                        value="{{ old('recipient_phone') }}" inputmode="numeric" maxlength="13"
+                                        pattern="(08[0-9]{6,11}|62[0-9]{6,11})" required>
+                                    @error('recipient_phone')
+                                        <p class="form-text" style="color: var(--danger-color);">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -699,7 +680,10 @@
                                     <label for="postal_code" class="form-label required">Kode Pos</label>
                                     <input type="text" id="postal_code" name="postal_code" class="form-control"
                                         value="{{ old('postal_code', isset($editAddress) ? $editAddress->postal_code : '') }}"
-                                        required>
+                                        inputmode="numeric" pattern="[0-9]+" maxlength="10" required>
+                                    @error('postal_code')
+                                        <p class="form-text" style="color: var(--danger-color);">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -707,6 +691,9 @@
                                 <label for="street" class="form-label required">Alamat Lengkap</label>
                                 <textarea id="street" name="street" class="form-control" rows="3"
                                     placeholder="Jalan, No. Rumah, RT/RW, Desa/Kelurahan" required></textarea>
+                                @error('street')
+                                    <p class="form-text" style="color: var(--danger-color);">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div class="form-group">
@@ -1246,7 +1233,6 @@
 
                 // Fill form
                 document.getElementById('address_id').value = address.id;
-                document.getElementById('address_label').value = address.label;
                 document.getElementById('recipient_name').value = address.recipient_name;
                 document.getElementById('recipient_phone').value = address.recipient_phone;
                 document.getElementById('province').value = address.province;
@@ -1382,7 +1368,6 @@
 
                 // Fill form data
                 document.getElementById('address_id').value = address.id;
-                document.getElementById('address_label').value = address.label;
                 document.getElementById('recipient_name').value = address.recipient_name;
                 document.getElementById('recipient_phone').value = address.recipient_phone;
                 document.getElementById('postal_code').value = address.postal_code;

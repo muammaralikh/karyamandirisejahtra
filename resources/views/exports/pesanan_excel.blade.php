@@ -36,14 +36,16 @@
     <table>
         <thead>
             <tr>
-                <th>Tanggal</th>
-                <th>Nama Pemesan</th>
-                <th>Alamat Lengkap</th>
+                <th>Nomor Order</th>
+                <th>Nama Akun</th>
+                <th>Penerima Pesanan</th>
                 <th>Daftar Produk</th>
                 <th>Total Item</th>
                 <th>Total Belanja Produk</th>
                 <th>Ongkir</th>
                 <th>Total Akhir</th>
+                <th>Nomor Telepon</th>
+                <th>Alamat Lengkap</th>
                 <th>Status Pesanan</th>
             </tr>
         </thead>
@@ -55,14 +57,16 @@
                     })->implode(', ');
                 @endphp
                 <tr>
-                    <td>{{ $order->created_at->format('d-m-Y') }}</td>
+                    <td>{{ $order->order_number }}</td>
                     <td>{{ $order->user->name ?? '-' }}</td>
-                    <td>{{ preg_replace('/\s+/', ' ', $order->shipping_address ?? '-') }}</td>
+                    <td>{{ $order->recipient_name ?? '-' }}</td>
                     <td>{{ $daftarProduk ?: '-' }}</td>
                     <td>{{ $order->items->sum('qty') }}</td>
                     <td>{{ (int) round($order->product_subtotal) }}</td>
                     <td>{{ (int) round($order->shipping_cost) }}</td>
                     <td>{{ (int) round($order->computed_grand_total) }}</td>
+                    <td>{{ $order->recipient_phone ?? '-' }}</td>
+                    <td>{{ preg_replace('/\s+/', ' ', $order->shipping_address ?? '-') }}</td>
                     <td>{{ strtoupper($order->status) }}</td>
                 </tr>
             @endforeach

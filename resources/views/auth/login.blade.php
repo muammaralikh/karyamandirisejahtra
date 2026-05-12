@@ -9,12 +9,12 @@
         @csrf
 
         <div class="form-group">
-            <label for="email">Email</label>
+            <label for="login">Email atau Username</label>
             <div class="input-wrap">
-                <i class="fas fa-envelope"></i>
-                <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="nama@email.com" required autofocus>
+                <i class="fas fa-user-circle"></i>
+                <input type="text" id="login" name="login" value="{{ old('login') }}" placeholder="masukkan email/username" required autofocus>
             </div>
-            @error('email')
+            @error('login')
                 <small class="form-error">{{ $message }}</small>
             @enderror
         </div>

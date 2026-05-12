@@ -45,12 +45,11 @@
                                            class="address-radio">
                                     
                                     <label for="address-{{ $address->id }}" class="address-label">
+                                        @if($address->is_primary)
                                         <div class="address-header">
-                                            <h4>{{ $address->label }}</h4>
-                                            @if($address->is_primary)
                                             <span class="badge-primary">Alamat Utama</span>
-                                            @endif
                                         </div>
+                                        @endif
                                         
                                         <div class="address-details">
                                             <p><strong>{{ $address->recipient_name }}</strong></p>

@@ -2,7 +2,7 @@
 
 @section('title', 'Register')
 @section('heading', 'Buat Akun Baru')
-@section('subtitle', 'Daftar dengan email aktif agar proses login dan reset password tersinkron.')
+@section('subtitle', 'Daftar dengan email aktif dan username unik untuk login.')
 
 @section('content')
     <form action="{{ route('proses.register') }}" method="POST" class="auth-form">
@@ -34,7 +34,7 @@
             <label for="username">Username</label>
             <div class="input-wrap">
                 <i class="fas fa-at"></i>
-                <input type="text" id="username" name="username" value="{{ old('username') }}" placeholder="Opsional, otomatis dibuat jika kosong">
+                <input type="text" id="username" name="username" value="{{ old('username') }}" placeholder="Username wajib diisi" required>
             </div>
             @error('username')
                 <small class="form-error">{{ $message }}</small>

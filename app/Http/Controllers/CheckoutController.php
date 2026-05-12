@@ -60,7 +60,7 @@ class CheckoutController extends Controller
         $grandTotal = $subtotal + $shippingCost;
         $addressShippingRates = $this->getAddressShippingRates($addresses);
         if ($order->status !== 'pending') {
-            return redirect()->route('user.orders.detail', $id)
+            return redirect()->route('user.account.my-account')
                 ->with('error', 'Pesanan ini sudah diproses atau telah dibayar');
         }
 
@@ -85,7 +85,7 @@ class CheckoutController extends Controller
             $cartItems = Cart::where('user_id', $user->id)->with('produk')->get();
 
             if ($cartItems->isEmpty()) {
-                return redirect()->route('cart.index')->with('error', 'Keranjang belanja kosong');
+                return redirect()->route('user.account.cart.index')->with('error', 'Keranjang belanja kosong');
             }
 
             foreach ($cartItems as $cartItem) {

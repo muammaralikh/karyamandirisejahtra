@@ -82,10 +82,10 @@
                     </div>
                     
                     <div class="action-buttons">
-                        <a href="{{ route('checkout.index') }}" class="btn-checkout">
+                        <a href="{{ route('user.account.checkout.index') }}" class="btn-checkout">
                             <i class="fas fa-shopping-cart"></i> Kembali ke Checkout
                         </a>
-                        <a href="{{ route('cart.index') }}" class="btn-cart">
+                        <a href="{{ route('user.account.cart.index') }}" class="btn-cart">
                             <i class="fas fa-arrow-left"></i> Lihat Keranjang
                         </a>
                     </div>

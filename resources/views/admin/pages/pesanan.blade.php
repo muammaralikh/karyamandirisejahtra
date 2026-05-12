@@ -267,7 +267,7 @@
                             <div class="col-md-4 col-sm-8 mb-2">
                                 <div class="input-group">
                                     <input type="text" name="search" class="form-control"
-                                        placeholder="Cari Nomor Order..." value="{{ request('search') }}">
+                                        placeholder="Cari nomor order / nama akun / penerima / produk..." value="{{ request('search') }}">
                                     <div class="input-group-append">
                                         <button class="btn btn-outline-primary" type="submit">
                                             <i class="fas fa-search"></i>
@@ -300,6 +300,8 @@
                                 <tr>
                                     <th width="60">#</th>
                                     <th width="80">Nomor Order</th>
+                                    <th width="80">Nama Akun</th>
+                                    <th width="80">Penerima Pesanan</th>
                                     <th width="80">Produk</th>
                                     <th width="80">Jumlah</th>
                                     <th width="80">Total</th>
@@ -316,6 +318,8 @@
                                     <tr>
                                         <td class="text-center">{{ $loop->iteration }}</td>
                                         <td>{{ $order->order_number }}</td>
+                                        <td>{{ $order->user->name ?? '-' }}</td>
+                                        <td>{{ $order->recipient_name }}</td>
 
                                         <td>
                                             @foreach($order->items as $item)
@@ -359,13 +363,13 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="text-center py-5">
+                                        <td colspan="12" class="text-center py-5">
                                             <div class="empty-state">
                                                 <i class="fas fa-folder-open"></i>
                                                 <h5 class="mt-3">Tidak ada Pesanan ditemukan</h5>
                                                 <p class="text-muted">
                                                     @if(request()->has('search') && request('search'))
-                                                        Tidak ada Nomor Order dengan "{{ request('search') }}"
+                                                        Tidak ada pesanan dengan kata kunci "{{ request('search') }}"
                                                     @else
                                                         Belum ada data Pesanan.
                                                     @endif
