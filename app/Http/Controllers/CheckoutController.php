@@ -27,11 +27,14 @@ class CheckoutController extends Controller
         $subtotal = $cartItems->sum(function ($item) {
             return $item->qty * $item->price;
         });
+        $totalWeight = $cartItems->sum(function ($item) {
+            return ($item->produk->berat ?? 0) * $item->qty;
+        });
         $addresses = $user->addresses()->orderBy('is_primary', 'desc')->get();
         $selectedAddress = $addresses->firstWhere('is_primary', true) ?? $addresses->first();
-        $shippingCost = $selectedAddress ? $this->getShippingCostForAddress($selectedAddress) : 0;
+        $shippingCost = $selectedAddress ? $this->getShippingCostForAddress($selectedAddress, $totalWeight) : 0;
         $grandTotal = $subtotal + $shippingCost;
-        $addressShippingRates = $this->getAddressShippingRates($addresses);
+        $addressShippingRates = $this->getAddressShippingRates($addresses, $totalWeight);
         $categories = Kategori::latest()->get();
         return view('cart.checkout', compact(
             'cartItems',
@@ -40,7 +43,8 @@ class CheckoutController extends Controller
             'addresses',
             'shippingCost',
             'grandTotal',
-            'addressShippingRates'
+            'addressShippingRates',
+            'totalWeight'
         ));
     }
     public function continue($id)
@@ -54,11 +58,14 @@ class CheckoutController extends Controller
         $subtotal = $cartItems->sum(function ($item) {
             return $item->qty * $item->price;
         });
+        $totalWeight = $cartItems->sum(function ($item) {
+            return ($item->produk->berat ?? 0) * $item->qty;
+        });
         $addresses = $user->addresses()->orderBy('is_primary', 'desc')->get();
         $selectedAddress = $addresses->firstWhere('is_primary', true) ?? $addresses->first();
-        $shippingCost = $selectedAddress ? $this->getShippingCostForAddress($selectedAddress) : 0;
+        $shippingCost = $selectedAddress ? $this->getShippingCostForAddress($selectedAddress, $totalWeight) : 0;
         $grandTotal = $subtotal + $shippingCost;
-        $addressShippingRates = $this->getAddressShippingRates($addresses);
+        $addressShippingRates = $this->getAddressShippingRates($addresses, $totalWeight);
         if ($order->status !== 'pending') {
             return redirect()->route('user.account.my-account')
                 ->with('error', 'Pesanan ini sudah diproses atau telah dibayar');
@@ -70,7 +77,8 @@ class CheckoutController extends Controller
             'addresses',
             'shippingCost',
             'grandTotal',
-            'addressShippingRates'
+            'addressShippingRates',
+            'totalWeight'
         ));
     }
     public function process(Request $request)
@@ -104,17 +112,19 @@ class CheckoutController extends Controller
             $subtotal = $cartItems->sum(function ($item) {
                 return $item->qty * $item->price;
             });
+            $totalWeight = $cartItems->sum(function ($item) {
+                return ($item->produk->berat ?? 0) * $item->qty;
+            });
             $orderNumber = 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(6));
             $address = $user->addresses()->where('id', $request->address_id)->firstOrFail();
-            $shippingRate = ShippingRate::findForAddress($address);
+            $shippingCost = $this->getShippingCostForAddress($address, $totalWeight);
 
-            if (!$shippingRate) {
+            if ($shippingCost <= 0) {
                 return redirect()->back()
                     ->with('error', 'Tarif ongkir untuk alamat ini belum tersedia. Silakan pilih alamat lain atau hubungi admin.')
                     ->withInput();
             }
 
-            $shippingCost = (float) $shippingRate->tarif_ongkir;
             $grandTotal = $subtotal + $shippingCost;
             $order = DB::transaction(function () use (
                 $user,
@@ -245,24 +255,40 @@ class CheckoutController extends Controller
         return view('checkout.instructions');
     }
 
-    private function getShippingCostForAddress(Address $address): float
+    private function getShippingCostForAddress(Address $address, int $totalWeightGrams): float
     {
         $shippingRate = ShippingRate::findForAddress($address);
 
-        return $shippingRate ? (float) $shippingRate->tarif_ongkir : 0;
+        if (! $shippingRate) {
+            return 0;
+        }
+
+        $billableKg = $this->calculateBillableWeight($totalWeightGrams);
+
+        return round((float) $shippingRate->tarif_ongkir * $billableKg, 2);
     }
 
-    private function getAddressShippingRates($addresses): array
+    private function getAddressShippingRates($addresses, int $totalWeightGrams): array
     {
-        return $addresses->mapWithKeys(function (Address $address) {
+        return $addresses->mapWithKeys(function (Address $address) use ($totalWeightGrams) {
             $shippingRate = ShippingRate::findForAddress($address);
+            $billableKg = $shippingRate ? $this->calculateBillableWeight($totalWeightGrams) : 0;
 
             return [
                 $address->id => [
                     'available' => (bool) $shippingRate,
-                    'cost' => $shippingRate ? (float) $shippingRate->tarif_ongkir : 0,
+                    'cost' => $shippingRate ? round((float) $shippingRate->tarif_ongkir * $billableKg, 2) : 0,
                 ],
             ];
         })->all();
+    }
+
+    private function calculateBillableWeight(int $grams): int
+    {
+        if ($grams <= 1300) {
+            return 1;
+        }
+
+        return 1 + (int) ceil(($grams - 1300) / 1000);
     }
 }

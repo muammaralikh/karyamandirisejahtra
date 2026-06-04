@@ -143,6 +143,11 @@
                             </div>
                             
                             <div class="summary-row">
+                                <span>Berat Total</span>
+                                <span>{{ number_format($totalWeight ?? 0, 0, ',', '.') }} gram</span>
+                            </div>
+                            
+                            <div class="summary-row">
                                 <span>Ongkos Kirim</span>
                                 <span class="free-shipping" id="shippingCostText">Rp {{ number_format($shippingCost, 0, ',', '.') }}</span>
                             </div>

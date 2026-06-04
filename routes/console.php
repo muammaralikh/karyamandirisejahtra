@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\PesananController;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -64,3 +65,9 @@ Artisan::command('media:sync-images', function () {
 
     $this->info("Sinkronisasi selesai. Produk: {$produkSynced}, Kategori: {$kategoriSynced}");
 })->purpose('Sinkronkan path database dan file gambar produk/kategori');
+
+Artisan::command('orders:cancel-expired-pending', function () {
+    $cancelled = PesananController::cancelExpiredPendingOrders();
+
+    $this->info("Pesanan pending yang otomatis batal: {$cancelled}");
+})->purpose('Batalkan pesanan pending yang melewati batas 1x24 jam');

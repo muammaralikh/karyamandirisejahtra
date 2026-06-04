@@ -24,10 +24,26 @@ class Produk extends Model
         'harga',
         'deskripsi',
         'stok',
+        'berat',
+        'varian',
     ];
+
     public function kategori()
     {
         return $this->belongsTo(Kategori::class, 'kategori_id');
+    }
+
+    public function getVarianOptionsAttribute(): array
+    {
+        if (! isset($this->varian) || trim($this->varian) === '') {
+            return [];
+        }
+
+        return collect(explode(',', $this->varian))
+            ->map(fn($option) => trim($option))
+            ->filter()
+            ->values()
+            ->all();
     }
     // Relasi dengan OrderItem
     public function orderItems()

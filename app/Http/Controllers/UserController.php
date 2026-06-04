@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\GeneratesUniqueUsername;
 use Illuminate\Http\Request;
+use App\Models\ActivityLog;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -46,6 +47,7 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
+        $oldValues = $user->only(['name', 'email', 'username', 'role', 'status']);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -58,6 +60,15 @@ class UserController extends Controller
             $validated['username'] = $validated['username'] ?? $this->generateUniqueUsernameFromEmail($validated['email'], $user->id);
 
             $user->update($validated);
+            $user->refresh();
+            ActivityLog::record(
+                'update_user',
+                $user,
+                $oldValues,
+                $user->only(['name', 'email', 'username', 'role', 'status']),
+                "Akun {$user->email} diubah.",
+                $user->name
+            );
             return redirect()->route('daftar-user.index')
                 ->with('success', 'Pengguna berhasil diperbarui');
 
@@ -75,7 +86,17 @@ class UserController extends Controller
         }
 
         try {
+            $oldValues = $user->only(['id', 'name', 'email', 'username', 'role', 'status']);
+            $label = $user->name;
             $user->delete();
+            ActivityLog::record(
+                'hapus_user',
+                $user,
+                $oldValues,
+                [],
+                "Akun {$oldValues['email']} dihapus.",
+                $label
+            );
 
             return redirect()->route('daftar-user.index')
                 ->with('success', 'Pengguna berhasil dihapus');
@@ -94,7 +115,7 @@ class UserController extends Controller
             'role' => 'required|string',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'username' => $request->username ?: $this->generateUniqueUsernameFromEmail($request->email),
@@ -102,6 +123,14 @@ class UserController extends Controller
             'role' => $request->role,
             'status' => 'Aktif',
         ]);
+        ActivityLog::record(
+            'tambah_user',
+            $user,
+            [],
+            $user->only(['id', 'name', 'email', 'username', 'role', 'status']),
+            "Akun {$user->email} ditambahkan.",
+            $user->name
+        );
 
         return back()->with('success', 'Akun berhasil ditambah');
     }

@@ -26,15 +26,16 @@ class AdminController extends Controller
         $totalKategori = Kategori::count();
         $totalUser = User::count();
         $totalPesanan = Order::count();
-        $totalPendapatan = Order::where('status', 'completed')->sum('total');
+        $paidStatuses = ['completed', 'Completed', 'lunas'];
+        $totalPendapatan = Order::whereIn('status', $paidStatuses)->sum('total');
 
-        $currentMonthRevenue = Order::where('status', 'completed')
+        $currentMonthRevenue = Order::whereIn('status', $paidStatuses)
             ->whereYear('created_at', $now->year)
             ->whereMonth('created_at', $now->month)
             ->sum('total');
 
         $previousMonth = $now->copy()->subMonth();
-        $previousMonthRevenue = Order::where('status', 'completed')
+        $previousMonthRevenue = Order::whereIn('status', $paidStatuses)
             ->whereYear('created_at', $previousMonth->year)
             ->whereMonth('created_at', $previousMonth->month)
             ->sum('total');
@@ -55,7 +56,7 @@ class AdminController extends Controller
             ? "CAST(strftime('%m', created_at) AS INTEGER)"
             : 'MONTH(created_at)';
 
-        $salesQuery = Order::where('status', 'completed')
+        $salesQuery = Order::whereIn('status', $paidStatuses)
             ->where('created_at', '>=', $startDate)
             ->where('created_at', '<', $endDate)
             ->selectRaw("{$yearExpression} as year, {$monthExpression} as month, SUM(total) as total")

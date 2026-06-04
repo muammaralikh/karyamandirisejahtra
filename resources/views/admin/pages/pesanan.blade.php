@@ -62,6 +62,42 @@
         padding: 4px 10px;
     }
 
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 76px;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .status-warning {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffe08a;
+    }
+
+    .status-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #b7dfc2;
+    }
+
+    .status-danger {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f1b0b7;
+    }
+
+    .status-secondary {
+        background: #e9ecef;
+        color: #495057;
+        border: 1px solid #ced4da;
+    }
+
     .table-container {
         width: 100%;
         overflow-x: auto;
@@ -309,6 +345,7 @@
                                     <th width="80">Sub Total</th>
                                     <th width="80">Nomor Telepon</th>
                                     <th width="80">Alamat</th>
+                                    <th width="100">Bukti Transfer</th>
                                     <th width="80">Status</th>
                                     <th width="150" class="text-center">Aksi</th>
                                 </tr>
@@ -345,25 +382,60 @@
 
                                         <td>{{ $order->recipient_phone }}</td>
                                         <td>{{ $order->shipping_address }}</td>
-                                        <td>{{ $order->status }}</td>
+                                        <td>
+                                            @if($order->payment_proof)
+                                                <a href="{{ asset('storage/' . $order->payment_proof) }}" target="_blank"
+                                                    class="btn btn-outline-success btn-sm">
+                                                    <i class="fas fa-paperclip"></i> Lihat
+                                                </a>
+                                            @else
+                                                <span class="text-muted">Belum ada</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <span class="status-pill status-{{ $order->status_color }}">
+                                                {{ $order->status_text }}
+                                            </span>
+                                            @if($order->cancellation_reason)
+                                                <div class="small text-muted mt-1">{{ $order->cancellation_reason }}</div>
+                                            @endif
+                                        </td>
                                         <td>
                                             <div class="btn-action-group justify-content-center">
-                                                <button class="btn btn-warning btn-sm" data-toggle="modal"
-                                                    data-target="#edit{{ $order->id }}" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                    <span class="d-none d-sm-inline"> Edit</span>
-                                                </button>
-                                                <button class="btn btn-danger btn-sm" data-toggle="modal"
-                                                    data-target="#hapus{{ $order->id }}" title="Hapus">
-                                                    <i class="fas fa-trash"></i>
-                                                    <span class="d-none d-sm-inline"> Hapus</span>
-                                                </button>
+                                                @if($order->isPendingPayment())
+                                                    <button class="btn btn-success btn-sm" data-toggle="modal"
+                                                        data-target="#lunas{{ $order->id }}" title="Konfirmasi Lunas">
+                                                        <i class="fas fa-check-circle"></i>
+                                                        <span class="d-none d-sm-inline"> Lunas</span>
+                                                    </button>
+                                                    <form action="{{ route('pesanan.destroy', $order->id) }}" method="POST"
+                                                        onsubmit="return confirm('Anda yakin ingin menghapus pesanan ini? Tindakan ini tidak dapat dibatalkan.')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger btn-sm" title="Hapus Pesanan">
+                                                            <i class="fas fa-trash"></i>
+                                                            <span class="d-none d-sm-inline"> Hapus</span>
+                                                        </button>
+                                                    </form>
+                                                @elseif($order->status === 'cancelled')
+                                                    <form action="{{ route('pesanan.destroy', $order->id) }}" method="POST"
+                                                        onsubmit="return confirm('Anda yakin ingin menghapus pesanan ini? Tindakan ini tidak dapat dibatalkan.')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger btn-sm" title="Hapus Pesanan">
+                                                            <i class="fas fa-trash"></i>
+                                                            <span class="d-none d-sm-inline"> Hapus</span>
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <span class="text-muted">Tidak ada aksi</span>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="12" class="text-center py-5">
+                                        <td colspan="14" class="text-center py-5">
                                             <div class="empty-state">
                                                 <i class="fas fa-folder-open"></i>
                                                 <h5 class="mt-3">Tidak ada Pesanan ditemukan</h5>
@@ -387,68 +459,64 @@
     </section>
 </div>
 @foreach($pesanan as $order)
-    <div class="modal fade" id="edit{{ $order->id }}">
+    <div class="modal fade" id="lunas{{ $order->id }}">
         <div class="modal-dialog modal-lg-custom">
             <div class="modal-content">
                 <form action="{{ route('pesanan.update', $order->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
-                    <div class="modal-header bg-warning">
+                    <div class="modal-header bg-success text-white">
                         <h5 class="modal-title">
-                            <i class="fas fa-edit"></i> Edit Status
+                            <i class="fas fa-check-circle"></i> Konfirmasi Lunas
                         </h5>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <select name="status" class="form-control" required>
-                            <option value="">-- Pilih Status --</option>
-                            <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="Shipped" {{ $order->status == 'Shipped' ? 'selected' : '' }}>Shipped</option>
-                            <option value="Completed" {{ $order->status == 'Completed' ? 'selected' : '' }}>Completed</option>
-                        </select>
+                        <div class="mb-3">
+                            <strong>{{ $order->order_number }}</strong>
+                            <div class="text-muted">
+                                Total pembayaran: Rp {{ number_format($order->computed_grand_total, 0, ',', '.') }}
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            Pesanan akan berubah dari <strong>Pending</strong> menjadi <strong>Lunas</strong>
+                            setelah bukti transfer diupload.
+                        </div>
+
+                        <div class="form-group">
+                            <label for="payment_proof_{{ $order->id }}">Upload Bukti Transfer</label>
+                            <div class="custom-file">
+                                <input type="file" name="payment_proof" id="payment_proof_{{ $order->id }}"
+                                    class="custom-file-input" accept=".jpg,.jpeg,.png,.pdf" required>
+                                <label class="custom-file-label" for="payment_proof_{{ $order->id }}">
+                                    Pilih file JPG, PNG, atau PDF
+                                </label>
+                            </div>
+                            <small class="form-text text-muted">Maksimal 4MB.</small>
+                        </div>
                     </div>
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-warning">
-                            <i class="fas fa-save"></i> Update
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Simpan Lunas
                         </button>
                     </div>
 
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="hapus{{ $order->id }}">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form action="{{ route('pesanan.destroy', $order->id) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title">
-                            <i class="fas fa-trash"></i> Konfirmasi Hapus
-                        </h5>
-                        <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <div class="mb-3">
-                            <i class="fas fa-exclamation-triangle fa-3x text-warning"></i>
-                        </div>
-                        <p>Anda yakin ingin menghapus pesanan:</p>
-                        <h5 class="text-danger font-weight-bold">{{ $order->order_number }}</h5>
-                        <p class="text-muted mt-3">Tindakan ini tidak dapat dibatalkan!</p>
-                    </div>
-                    <div class="modal-footer justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                            <i class="fas fa-times"></i> Batal
-                        </button>
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-trash"></i> Ya, Hapus
-                        </button>
-                    </div>
                 </form>
             </div>
         </div>
     </div>
 @endforeach
+<script>
+    document.querySelectorAll('.custom-file-input').forEach(function (input) {
+        input.addEventListener('change', function () {
+            const fileName = this.files.length ? this.files[0].name : 'Pilih file JPG, PNG, atau PDF';
+            const label = this.closest('.custom-file').querySelector('.custom-file-label');
+            if (label) {
+                label.textContent = fileName;
+            }
+        });
+    });
+</script>

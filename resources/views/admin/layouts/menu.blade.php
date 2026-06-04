@@ -87,13 +87,6 @@
                 <p class="text-white">Produk</p>
               </a>
             </li>
-            <li class="nav-item">
-              <a href="{{ route('produk.stock') }}"
-                class="nav-link {{ ($activeStokProduk ?? '') == 'stok-produk' ? 'active' : '' }}">
-                <i class="nav-icon fas fa-boxes"></i>
-                <p class="text-white">Stok Produk</p>
-              </a>
-            </li>
             
             <!-- Laporan -->
             <li class="nav-item">
@@ -123,6 +116,13 @@
                 class="nav-link {{ ($activeUser ?? '') == 'user' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-user"></i>
                 <p class="text-white">Daftar User</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('activity-logs.index') }}"
+                class="nav-link {{ ($activeActivityLog ?? '') == 'activity-log' ? 'active' : '' }}">
+                <i class="nav-icon fas fa-history"></i>
+                <p class="text-white">Log Aktivitas</p>
               </a>
             </li>
 

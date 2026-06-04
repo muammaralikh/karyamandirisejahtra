@@ -46,6 +46,7 @@
                 <th>Total Akhir</th>
                 <th>Nomor Telepon</th>
                 <th>Alamat Lengkap</th>
+                <th>Bukti Transfer</th>
                 <th>Status Pesanan</th>
             </tr>
         </thead>
@@ -67,7 +68,8 @@
                     <td>{{ (int) round($order->computed_grand_total) }}</td>
                     <td>{{ $order->recipient_phone ?? '-' }}</td>
                     <td>{{ preg_replace('/\s+/', ' ', $order->shipping_address ?? '-') }}</td>
-                    <td>{{ strtoupper($order->status) }}</td>
+                    <td>{{ $order->payment_proof ? asset('storage/' . $order->payment_proof) : '-' }}</td>
+                    <td>{{ strtoupper($order->status_text) }}</td>
                 </tr>
             @endforeach
         </tbody>

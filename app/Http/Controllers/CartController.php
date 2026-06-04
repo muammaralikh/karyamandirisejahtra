@@ -24,7 +24,8 @@ class CartController extends Controller
     public function add(Request $request)
     {
         $request->validate([
-            'produk_id' => 'required|exists:produk,id'
+            'produk_id' => 'required|exists:produk,id',
+            'variant' => 'nullable|string|max:255',
         ]);
 
         $user = Auth::user();
@@ -34,9 +35,22 @@ class CartController extends Controller
             return redirect()->back()->with('error', 'Stok produk sedang habis.');
         }
 
+        if (! empty($product->varian_options) && ! $request->filled('variant')) {
+            return redirect()->back()->with('error', 'Silakan pilih varian produk terlebih dahulu.');
+        }
+
+        $selectedVariant = $request->input('variant');
+        $attributes = [];
+        if ($selectedVariant) {
+            $attributes['Varian'] = $selectedVariant;
+        }
+
         $existingCart = Cart::where('user_id', $user->id)
             ->where('produk_id', $product->id)
-            ->first();
+            ->get()
+            ->first(function ($item) use ($attributes) {
+                return $item->attributes === $attributes;
+            });
 
         if ($existingCart) {
             if ($existingCart->qty >= $product->stok) {
@@ -53,7 +67,8 @@ class CartController extends Controller
                 'user_id' => $user->id,
                 'produk_id' => $product->id,
                 'qty' => '1',
-                'price' => $product->harga
+                'price' => $product->harga,
+                'attributes' => $attributes,
             ]);
 
             $message = 'Produk berhasil ditambahkan ke keranjang!';

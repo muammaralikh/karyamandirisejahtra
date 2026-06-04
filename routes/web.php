@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\CartController;
@@ -43,6 +44,8 @@ Route::post('/cart/add', [HomeController::class, 'addToCart'])->name('cart.add')
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])
         ->name('admin.dashboard');
+    Route::get('/log-aktivitas', [ActivityLogController::class, 'index'])
+        ->name('activity-logs.index');
 
     Route::get('/produk', [ProdukController::class, 'index'])->name('produk.index');
     Route::get('/stok-produk', [ProdukController::class, 'stock'])->name('produk.stock');

@@ -4,14 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\GeneratesUniqueUsername;
 use App\Models\Address;
+use App\Models\ActivityLog;
 use App\Models\City;
 use App\Models\District;
 use App\Models\Kategori;
+use App\Models\Order;
 use App\Models\Produk;
 use App\Models\Province;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class AkunController extends Controller
 {
@@ -199,6 +203,80 @@ class AkunController extends Controller
         ]);
     }
 
+    public function uploadPaymentProof(Request $request, $id)
+    {
+        $request->validate([
+            'payment_proof' => 'required|file|mimes:jpg,jpeg,png,pdf|max:4096',
+        ], [
+            'payment_proof.required' => 'Bukti transfer wajib diupload.',
+            'payment_proof.mimes' => 'Bukti transfer harus berupa file JPG, JPEG, PNG, atau PDF.',
+            'payment_proof.max' => 'Ukuran bukti transfer maksimal 4MB.',
+        ]);
+
+        $user = Auth::user();
+        $order = $user->orders()->findOrFail($id);
+
+        if ($order->isExpiredPendingPayment()) {
+            $oldValues = $order->only(['status', 'cancelled_at', 'cancellation_reason']);
+            $order->cancel('Batal - tidak ada konfirmasi pembayaran dalam 1x24 jam.');
+
+            ActivityLog::record(
+                'auto_batal_pesanan',
+                $order,
+                $oldValues,
+                $order->only(['status', 'cancelled_at', 'cancellation_reason']),
+                "Pesanan {$order->order_number} otomatis batal karena melewati 1x24 jam.",
+                $order->order_number
+            );
+
+            return redirect()->route('user.account.my-account')->with([
+                'error' => 'Pesanan sudah melewati batas 1x24 jam dan otomatis dibatalkan.',
+                'tab' => 'orders'
+            ]);
+        }
+
+        if (! $order->isPendingPayment()) {
+            return redirect()->route('user.account.my-account')->with([
+                'error' => 'Hanya pesanan Pending yang bisa mengunggah bukti transfer.',
+                'tab' => 'orders'
+            ]);
+        }
+
+        $paymentProofPath = $this->storePaymentProof($request->file('payment_proof'));
+        $oldValues = $order->only(['status', 'paid_at', 'payment_proof']);
+        $order->markAsPaid($paymentProofPath);
+
+        ActivityLog::record(
+            'upload_bukti_transfer',
+            $order,
+            $oldValues,
+            $order->only(['status', 'paid_at', 'payment_proof']),
+            "Bukti transfer untuk pesanan {$order->order_number} diupload oleh pelanggan.",
+            $order->order_number
+        );
+
+        return redirect()->route('user.account.my-account')->with([
+            'success' => 'Bukti transfer berhasil diupload. Pesanan otomatis ditandai lunas.',
+            'tab' => 'orders'
+        ]);
+    }
+
+    private function storePaymentProof($file): string
+    {
+        $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('payment-proofs', $filename, 'public');
+
+        $source = storage_path('app/public/' . $path);
+        $destination = public_path('storage/' . $path);
+
+        if (File::exists($source)) {
+            File::ensureDirectoryExists(dirname($destination));
+            File::copy($source, $destination);
+        }
+
+        return $path;
+    }
+
     // Set alamat sebagai utama
     public function setPrimaryAddress($id)
     {
@@ -217,4 +295,55 @@ class AkunController extends Controller
         ]);
     }
 
+    // Hapus order (hanya bisa jika status pending atau lunas)
+    public function deleteOrder($id)
+    {
+        $user = Auth::user();
+        $order = $user->orders()->findOrFail($id);
+
+        if (!$order->canBeDeleted()) {
+            return redirect()->route('user.account.my-account')->with([
+                'error' => 'Pesanan hanya bisa dihapus saat status Pending atau Lunas. Hubungi admin jika sudah dikonfirmasi.',
+                'tab' => 'orders'
+            ]);
+        }
+
+        try {
+            $oldValues = [
+                'order_number' => $order->order_number,
+                'status' => $order->status,
+                'total' => $order->total,
+            ];
+
+            // Simpan informasi order sebelum dihapus untuk log
+            $orderNumber = $order->order_number;
+
+            // Hapus order items dulu
+            $order->items()->delete();
+
+            // Hapus order
+            $order->delete();
+
+            ActivityLog::record(
+                'hapus_order_user',
+                null,
+                $oldValues,
+                [],
+                "Pesanan {$orderNumber} dihapus oleh pelanggan {$user->name}.",
+                $orderNumber
+            );
+
+            return redirect()->route('user.account.my-account')->with([
+                'success' => 'Pesanan berhasil dihapus!',
+                'tab' => 'orders'
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->route('user.account.my-account')->with([
+                'error' => 'Terjadi kesalahan saat menghapus pesanan: ' . $e->getMessage(),
+                'tab' => 'orders'
+            ]);
+        }
+    }
+
 }
+

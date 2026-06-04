@@ -733,6 +733,7 @@
                                         </div>
                                         <div class="order-status">
                                             <span class="status-badge status-{{ strtolower($order->status) }}">
+                                                {{ $order->status_text }}
                                             </span>
                                         </div>
                                     </div>
@@ -760,11 +761,15 @@
                                             <span>Total Pesanan:</span>
                                             <strong>Rp {{ number_format($order->subtotal, 0, ',', '.') }}</strong>
                                         </div>
-                                        <div class="order-actions">
-                                            @if(in_array($order->status, ['completed', 'shipped']))
-                                                <button type="button" class="btn btn-secondary btn-sm"
-                                                    onclick="reviewOrder({{ $order->id }})">
-                                                </button>
+
+                                        <div class="order-payment-info">
+                                            @if($order->payment_proof)
+                                                <a href="{{ asset('storage/' . $order->payment_proof) }}" target="_blank"
+                                                    class="btn btn-outline-success btn-sm">
+                                                    <i class="fas fa-paperclip"></i> Lihat Bukti Transfer
+                                                </a>
+                                            @elseif($order->isPendingPayment())
+                                                <div class="text-muted">Belum ada bukti transfer. Pesanan akan dikonfirmasi oleh admin.</div>
                                             @endif
                                         </div>
                                     </div>
@@ -904,6 +909,12 @@
         }
 
         .status-completed {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-lunas {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;

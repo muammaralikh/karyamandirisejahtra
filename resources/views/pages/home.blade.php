@@ -245,6 +245,19 @@ Swal.fire({
                     <form action="{{ route('user.account.cart.add') }}" method="POST" class="product-form">
                         @csrf
                         <input type="hidden" name="produk_id" value="{{ $product->id }}">
+                        
+                        @if(!empty($product->varian_options))
+                            <div class="variant-selector mb-3">
+                                <label class="variant-label">Pilih Varian:</label>
+                                <select name="variant" class="form-control" required>
+                                    <option value="">-- Pilih Varian --</option>
+                                    @foreach($product->varian_options as $option)
+                                        <option value="{{ $option }}">{{ $option }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
+                        
                         @if(($product->stok ?? 0) > 0)
                             <button type="submit" class="btn-cart">
                                 <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
@@ -255,6 +268,9 @@ Swal.fire({
                             </button>
                         @endif
                     </form>
+                    <p class="product-weight text-muted" style="font-size: 0.85rem; margin-top: 8px;">
+                        <i class="fas fa-weight"></i> {{ $product->berat ?? 0 }} gram/unit
+                    </p>
                 </div>
             </div>
             @endforeach

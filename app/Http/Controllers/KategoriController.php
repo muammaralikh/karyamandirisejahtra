@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use App\Models\Kategori;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use App\Models\ActivityLog;
 
 class KategoriController extends Controller
 {
@@ -95,17 +96,26 @@ class KategoriController extends Controller
         if ($request->hasFile('gambar')) {
             $gambarPath = $this->storeKategoriImage($request->file('gambar'));
         }
-        Kategori::create([
+        $kategori = Kategori::create([
             'id' => 'K-' . strtoupper(Str::random(6)),
             'nama' => $request->nama,
             'gambar' => $gambarPath,
         ]);
+        ActivityLog::record(
+            'tambah_kategori',
+            $kategori,
+            [],
+            $kategori->only(['id', 'nama', 'gambar']),
+            "Kategori {$kategori->nama} ditambahkan.",
+            $kategori->nama
+        );
 
         return back()->with('success', 'Kategori berhasil ditambahkan');
     }
     public function update(Request $request, $id)
     {
         $kategori = Kategori::where('id', $id)->firstOrFail();
+        $oldValues = $kategori->only(['nama', 'gambar']);
         $request->validate([
             'nama' => 'required',
             'gambar' => 'nullable|image|max:2048'
@@ -121,16 +131,34 @@ class KategoriController extends Controller
                 'gambar' => $this->storeKategoriImage($request->file('gambar')),
             ]);
         }
+        $kategori->refresh();
+        ActivityLog::record(
+            'update_kategori',
+            $kategori,
+            $oldValues,
+            $kategori->only(['nama', 'gambar']),
+            "Kategori {$kategori->nama} diubah.",
+            $kategori->nama
+        );
 
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil diupdate');
     }
     public function destroy($id)
     {
         $kategori = Kategori::where('id', $id)->firstOrFail();
+        $oldValues = $kategori->only(['id', 'nama', 'gambar']);
 
         $this->deleteKategoriImage($kategori->gambar);
 
         $kategori->delete();
+        ActivityLog::record(
+            'hapus_kategori',
+            $kategori,
+            $oldValues,
+            [],
+            "Kategori {$kategori->nama} dihapus.",
+            $kategori->nama
+        );
 
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil dihapus.');
     }

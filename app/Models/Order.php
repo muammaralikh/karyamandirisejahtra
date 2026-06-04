@@ -78,7 +78,7 @@ class Order extends Model
     // Scope untuk order aktif (belum selesai)
     public function scopeActive($query)
     {
-        return $query->whereNotIn('status', ['delivered', 'cancelled']);
+        return $query->whereNotIn('status', ['delivered', 'completed', 'lunas', 'cancelled']);
     }
 
     // Scope untuk search order
@@ -99,24 +99,30 @@ class Order extends Model
             'processing' => 'info',
             'shipped' => 'primary',
             'delivered' => 'success',
-            'cancelled' => 'danger'
+            'completed' => 'success',
+            'lunas' => 'success',
+            'cancelled' => 'danger',
+            'batal' => 'danger',
         ];
 
-        return $colors[$this->status] ?? 'secondary';
+        return $colors[strtolower((string) $this->status)] ?? 'secondary';
     }
 
     // Aksesor untuk status text
     public function getStatusTextAttribute()
     {
         $texts = [
-            'pending' => 'Menunggu Pembayaran',
+            'pending' => 'Pending',
             'processing' => 'Sedang Diproses',
             'shipped' => 'Dikirim',
             'delivered' => 'Selesai',
-            'cancelled' => 'Dibatalkan'
+            'completed' => 'Lunas',
+            'lunas' => 'Lunas',
+            'cancelled' => 'Batal',
+            'batal' => 'Batal',
         ];
 
-        return $texts[$this->status] ?? $this->status;
+        return $texts[strtolower((string) $this->status)] ?? $this->status;
     }
 
     // Aksesor untuk formatted date
@@ -166,7 +172,7 @@ class Order extends Model
     // Method untuk cek apakah order bisa dibatalkan
     public function canBeCancelled()
     {
-        return in_array($this->status, ['pending', 'processing']);
+        return in_array(strtolower((string) $this->status), ['pending', 'processing']);
     }
 
     // Method untuk cek apakah order sudah dibayar
@@ -193,6 +199,33 @@ class Order extends Model
         return $this->cancelled_at !== null;
     }
 
+    public function isPendingPayment(): bool
+    {
+        return strtolower((string) $this->status) === 'pending';
+    }
+
+    public function isExpiredPendingPayment(): bool
+    {
+        return $this->isPendingPayment() && $this->created_at && $this->created_at->lte(now()->subDay());
+    }
+
+    public function markAsPaid(string $paymentProofPath): self
+    {
+        $this->status = 'lunas';
+        $this->paid_at = now();
+        $this->payment_proof = $paymentProofPath;
+        $this->save();
+
+        return $this;
+    }
+
+    // Cek apakah order bisa dihapus (hanya pending atau lunas, belum dikonfirmasi admin)
+    public function canBeDeleted(): bool
+    {
+        $deletableStatuses = ['pending', 'lunas'];
+        return in_array(strtolower((string) $this->status), $deletableStatuses);
+    }
+
     // Method untuk update status
     public function updateStatus($status, $notes = null)
     {
@@ -207,6 +240,9 @@ class Order extends Model
                 break;
             case 'delivered':
                 $this->delivered_at = now();
+                break;
+            case 'lunas':
+                $this->paid_at = now();
                 break;
             case 'cancelled':
                 $this->cancelled_at = now();

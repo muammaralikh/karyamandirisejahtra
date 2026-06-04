@@ -8,6 +8,7 @@ use App\Models\Kategori;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use App\Models\ActivityLog;
 
 class ProdukController extends Controller
 {
@@ -127,8 +128,10 @@ class ProdukController extends Controller
             'nama' => 'required',
             'harga' => 'required|numeric',
             'stok' => 'required|integer|min:0',
+            'berat' => 'required|integer|min:0',
             'deskripsi' => 'required',
             'gambar' => 'required|image|max:2048',
+            'varian' => 'nullable|string|max:500',
         ], [
             'kategori_id.required' => 'Kategori wajib dipilih.',
             'nama.required' => 'Nama produk wajib diisi.',
@@ -149,27 +152,40 @@ class ProdukController extends Controller
             $gambarPath = $this->storeProductImage($request->file('gambar'));
         }
 
-        Produk::create([
+        $produk = Produk::create([
             'id' => 'P-' . strtoupper(Str::random(6)),
             'kategori_id' => $request->kategori_id,
             'nama' => $request->nama,
             'deskripsi' => $request->deskripsi,
             'harga' => $request->harga,
             'stok' => $request->stok,
+            'berat' => $request->berat,
+            'varian' => $request->varian,
             'gambar' => $gambarPath,
         ]);
+        ActivityLog::record(
+            'tambah_produk',
+            $produk,
+            [],
+            $produk->only(['id', 'kategori_id', 'nama', 'harga', 'stok', 'gambar']),
+            "Produk {$produk->nama} ditambahkan.",
+            $produk->nama
+        );
 
         return back()->with('success', 'Produk berhasil ditambahkan');
     }
     public function update(Request $request, $id)
     {
         $produk = Produk::where('id', $id)->firstOrFail();
+        $oldValues = $produk->only(['kategori_id', 'nama', 'harga', 'deskripsi', 'stok', 'gambar']);
         $request->validate([
             'kategori_id' => 'required',
             'nama' => 'required',
             'harga' => 'required|numeric',
             'stok' => 'required|integer|min:0',
+            'berat' => 'required|integer|min:0',
             'deskripsi' => 'nullable|string',
+            'varian' => 'nullable|string|max:500',
             'gambar' => 'nullable|image|max:2048',
         ]);
         $produk->update([
@@ -178,6 +194,8 @@ class ProdukController extends Controller
             'harga' => $request->harga,
             'deskripsi' => $request->deskripsi,
             'stok' => $request->stok,
+            'berat' => $request->berat,
+            'varian' => $request->varian,
         ]);
         if ($request->hasFile('gambar')) {
             $this->deleteProductImage($produk->gambar);
@@ -186,16 +204,34 @@ class ProdukController extends Controller
                 'gambar' => $this->storeProductImage($request->file('gambar')),
             ]);
         }
+        $produk->refresh();
+        ActivityLog::record(
+            'update_produk',
+            $produk,
+            $oldValues,
+            $produk->only(['kategori_id', 'nama', 'harga', 'deskripsi', 'stok', 'gambar']),
+            "Produk {$produk->nama} diubah.",
+            $produk->nama
+        );
 
         return redirect()->route('produk.index')->with('success', 'Produk berhasil diupdate');
     }
     public function destroy($id)
     {
         $produk = Produk::where('id', $id)->firstOrFail();
+        $oldValues = $produk->only(['id', 'kategori_id', 'nama', 'harga', 'deskripsi', 'stok', 'gambar']);
 
         $this->deleteProductImage($produk->gambar);
 
         $produk->delete();
+        ActivityLog::record(
+            'hapus_produk',
+            $produk,
+            $oldValues,
+            [],
+            "Produk {$produk->nama} dihapus.",
+            $produk->nama
+        );
 
         return redirect()->route('produk.index')->with('success', 'Produk berhasil dihapus.');
     }

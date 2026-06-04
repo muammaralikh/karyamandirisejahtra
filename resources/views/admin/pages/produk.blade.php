@@ -223,7 +223,8 @@
                                     <th width="120">Kategori</th>
                                     <th width="200">Deskripsi</th>
                                     <th width="120">Harga</th>
-                                    <th width="100">Stok</th>
+                                    <th width="100">Berat</th>
+                                    <th width="120">Stok</th>
                                     <th width="150" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -250,6 +251,7 @@
                                             <small>{{ Str::limit($p->deskripsi, 50) }}</small>
                                         </td>
                                         <td class="text-nowrap">Rp {{ number_format($p->harga, 0, ',', '.') }}</td>
+                                        <td>{{ $p->berat ?? 0 }} g</td>
                                         <td>
                                             @if(($p->stok ?? 0) > 0)
                                                 <span class="badge badge-success badge-custom">{{ $p->stok }} tersedia</span>
@@ -270,7 +272,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-center py-4">
+                                        <td colspan="9" class="text-center py-4">
                                             <div class="text-muted">
                                                 <i class="fas fa-box-open fa-2x mb-3"></i>
                                                 <p>Tidak ada produk ditemukan</p>
@@ -354,6 +356,18 @@
                                 <input type="number" name="stok" placeholder="Masukkan jumlah stok" class="form-control" required min="0" value="0">
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Berat (gram) <span class="text-danger">*</span></label>
+                                <input type="number" name="berat" placeholder="Berat produk per unit" class="form-control" required min="0" value="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Varian</label>
+                        <input type="text" name="varian" class="form-control" placeholder="Pisahkan varian dengan koma, contoh: Biasa, Mercon">
+                        <small class="text-muted">Masukkan varian produk jika ada, pisahkan dengan koma.</small>
                     </div>
                     
                     <div class="form-group">
@@ -435,10 +449,22 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Stok <span class="text-danger">*</span></label>
                                     <input type="number" name="stok" value="{{ $p->stok ?? 0 }}" class="form-control" required min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Berat (gram) <span class="text-danger">*</span></label>
+                                    <input type="number" name="berat" value="{{ $p->berat ?? 0 }}" class="form-control" required min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Varian</label>
+                                    <input type="text" name="varian" value="{{ $p->varian }}" class="form-control" placeholder="Pisahkan varian dengan koma">
                                 </div>
                             </div>
                         </div>
